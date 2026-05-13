@@ -388,7 +388,8 @@ window.showRoom = function(roomName,date){
       </div>
       <div class="modal-btn-row">
         <button class="btn btn-share btn-sm" onclick="shareBooking('${b.firebaseKey}')">📤 ส่งให้คนอื่น</button>
-        <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,"\\'")}','${b.room}','${b.checkin}','${b.checkout}')">🗑 ยกเลิก</button>
+        <button class="btn btn-sm" style="background:var(--accent-bg);color:var(--accent);border-color:rgba(201,169,110,0.3)" onclick="showQRModal()">💳 QR รับเงิน</button>
+        <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,'\\'')}','${b.room}','${b.checkin}','${b.checkout}')">🗑 ยกเลิก</button>
         <button class="btn btn-sm" onclick="closeModal()">ปิด</button>
       </div>`;
   }else{
@@ -488,6 +489,7 @@ function renderList(){
       </div>
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">
         <button class="btn btn-share btn-sm" onclick="shareBooking('${b.firebaseKey}')">📤</button>
+        <button class="btn btn-sm" style="background:var(--accent-bg);color:var(--accent);border-color:rgba(201,169,110,0.3)" onclick="showQRModal()">💳</button>
         <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,"\\'")}','${b.room}','${b.checkin}','${b.checkout}')">🗑</button>
       </div>
     </div>`).join('');
@@ -539,6 +541,116 @@ window.copyText = function(){
 window.lineShare = function(){
   window.open('https://line.me/R/msg/text/?'+encodeURIComponent(window._shareText||''),'_blank');
 };
+
+// ── PROMPTPAY QR ──
+const PP_PHONE = '0880005692';
+function crc16pp(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?(c<<1)^0x1021:(c<<1);}return(c&0xFFFF).toString(16).toUpperCase().padStart(4,'0');}
+function tlv(id,v){return id+String(v).length.toString().padStart(2,'0')+v;}
+function buildPPPayload(amount){
+  var acc='0066'+PP_PHONE.slice(1);
+  var aid=tlv('00','A000000677010111');
+  var acct=tlv('01',acc);
+  var p=tlv('00','01')+tlv('26',aid+acct)+tlv('53','764');
+  if(amount>0)p+=tlv('54',parseFloat(amount).toFixed(2));
+  p+=tlv('58','TH')+tlv('59','N/A')+tlv('60','Bangkok')+'6304';
+  return p+crc16pp(p);
+}
+function getQRType(len){if(len<=32)return 2;if(len<=53)return 3;if(len<=78)return 4;if(len<=106)return 5;return 6;}
+
+// Embedded QR engine
+function drawQR(canvas,text){
+var QRErrorCorrectLevel={M:0,L:1,H:2,Q:3};
+var PATTERN_POSITION_TABLE=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42]];
+var G15=(1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|(1<<0);
+var G15_MASK=(1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
+var G18=(1<<12)|(1<<11)|(1<<10)|(1<<9)|(1<<8)|(1<<5)|(1<<2)|(1<<0);
+function getBCHDigit(d){var r=0;while(d!=0){r++;d>>>=1;}return r;}
+function getBCHTypeInfo(data){var d=data<<10;while(getBCHDigit(d)-getBCHDigit(G15)>=0)d^=(G15<<(getBCHDigit(d)-getBCHDigit(G15)));return((data<<10)|d)^G15_MASK;}
+function getBCHTypeNumber(data){var d=data<<12;while(getBCHDigit(d)-getBCHDigit(G18)>=0)d^=(G18<<(getBCHDigit(d)-getBCHDigit(G18)));return(data<<12)|d;}
+var EXP=[],LOG=[];for(var i=0;i<8;i++)EXP[i]=1<<i;for(i=8;i<256;i++)EXP[i]=EXP[i-4]^EXP[i-5]^EXP[i-6]^EXP[i-8];for(i=0;i<255;i++)LOG[EXP[i]]=i;
+function gexp(n){while(n<0)n+=255;while(n>=256)n-=255;return EXP[n];}
+function glog(n){if(n<1)throw new Error('glog');return LOG[n];}
+function Poly(num,shift){var o=0;while(o<num.length&&num[o]==0)o++;this.num=new Array(num.length-o+shift);for(var i=0;i<num.length-o;i++)this.num[i]=num[i+o];}
+Poly.prototype.get=function(i){return this.num[i];};Poly.prototype.len=function(){return this.num.length;};
+Poly.prototype.mul=function(e){var n=new Array(this.len()+e.len()-1);for(var i=0;i<this.len();i++)for(var j=0;j<e.len();j++)n[i+j]^=gexp(glog(this.get(i))+glog(e.get(j)));return new Poly(n,0);};
+Poly.prototype.mod=function(e){if(this.len()-e.len()<0)return this;var r=glog(this.get(0))-glog(e.get(0)),n=new Array(this.len());for(var i=0;i<this.len();i++)n[i]=this.get(i);for(i=0;i<e.len();i++)n[i]^=gexp(glog(e.get(i))+r);return new Poly(n,0).mod(e);};
+var RS_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12]];
+function getRSBlocks(tn,ecl){var t=RS_TABLE[(tn-1)*4+(ecl==0?1:ecl==1?0:ecl==3?2:3)],l=[],i;for(i=0;i<t.length/3;i++)for(var j=0;j<t[i*3];j++)l.push({total:t[i*3+1],data:t[i*3+2]});return l;}
+function getMask(p,i,j){switch(p){case 0:return(i+j)%2==0;case 1:return i%2==0;case 2:return j%3==0;case 3:return(i+j)%3==0;case 4:return(Math.floor(i/2)+Math.floor(j/3))%2==0;case 5:return(i*j)%2+(i*j)%3==0;case 6:return((i*j)%2+(i*j)%3)%2==0;case 7:return((i*j)%3+(i+j)%2)%2==0;}}
+var typeNum=getQRType(text.length);
+var modules=[];var mc=typeNum*4+17;
+for(var r=0;r<mc;r++){modules[r]=new Array(mc);for(var c=0;c<mc;c++)modules[r][c]=null;}
+function setFinder(row,col){for(var r=-1;r<=7;r++){if(row+r<=-1||mc<=row+r)continue;for(var c=-1;c<=7;c++){if(col+c<=-1||mc<=col+c)continue;modules[row+r][col+c]=((0<=r&&r<=6&&(c==0||c==6))||(0<=c&&c<=6&&(r==0||r==6))||(2<=r&&r<=4&&2<=c&&c<=4));}}}
+setFinder(0,0);setFinder(mc-7,0);setFinder(0,mc-7);
+for(r=8;r<mc-8;r++)if(modules[r][6]==null)modules[r][6]=(r%2==0);
+for(var c=8;c<mc-8;c++)if(modules[6][c]==null)modules[6][c]=(c%2==0);
+var pos=PATTERN_POSITION_TABLE[typeNum-1]||[];
+for(i=0;i<pos.length;i++)for(var j=0;j<pos.length;j++){var row=pos[i],col=pos[j];if(modules[row][col]!=null)continue;for(var rr=-2;rr<=2;rr++)for(var cc=-2;cc<=2;cc++)modules[row+rr][col+cc]=(rr==-2||rr==2||cc==-2||cc==2||(rr==0&&cc==0));}
+function setTypeInfo(test,mask){var data=(0<<3)|mask,bits=getBCHTypeInfo(data);for(i=0;i<15;i++){var mod=(!test&&((bits>>i)&1)==1);if(i<6)modules[i][8]=mod;else if(i<8)modules[i+1][8]=mod;else modules[mc-15+i][8]=mod;}for(i=0;i<15;i++){var mod=(!test&&((bits>>i)&1)==1);if(i<8)modules[8][mc-i-1]=mod;else if(i<9)modules[8][15-i-1+1]=mod;else modules[8][15-i-1]=mod;}modules[mc-8][8]=!test;}
+function createData(){var buf=[],len=0;var mode=4,dataLen=text.length;buf[0]=((mode<<4)|((dataLen>>4)&0x0f));buf[1]=((dataLen&0x0f)<<4);var idx=12,bi=1;for(var i=0;i<text.length;i++){var code=text.charCodeAt(i);buf[bi]|=(code>>idx);bi++;if(bi>=buf.length)buf.push(0);buf[bi]|=(code<<(8-idx))&0xff;idx+=8-8;if(idx<=0){idx+=8;}}
+var bb={buf:[],len:0};function putB(num,length){for(var i=0;i<length;i++){var bufIdx=Math.floor(bb.len/8);if(bb.buf.length<=bufIdx)bb.buf.push(0);if(((num>>>(length-i-1))&1)==1)bb.buf[bufIdx]|=(0x80>>>(bb.len%8));bb.len++;}}
+putB(4,4);putB(text.length,8);for(var i=0;i<text.length;i++)putB(text.charCodeAt(i),8);
+var rsBlocks=getRSBlocks(typeNum,0);var totalData=0;for(i=0;i<rsBlocks.length;i++)totalData+=rsBlocks[i].data;
+if(bb.len+4<=totalData*8)putB(0,4);
+while(bb.len%8!=0)bb.buf[Math.floor(bb.len/8)]|=(0>>>(bb.len%8)),bb.len++;
+while(bb.len<totalData*8){putB(0xEC,8);if(bb.len<totalData*8)putB(0x11,8);}
+var dcdata=[],ecdata=[],maxDc=0,maxEc=0,offset=0;
+for(r=0;r<rsBlocks.length;r++){var dc=rsBlocks[r].data,ec=rsBlocks[r].total-dc;maxDc=Math.max(maxDc,dc);maxEc=Math.max(maxEc,ec);dcdata[r]=new Array(dc);for(i=0;i<dc;i++)dcdata[r][i]=0xff&bb.buf[i+offset];offset+=dc;var rsp=new Poly([1],0);for(i=0;i<ec;i++)rsp=rsp.mul(new Poly([1,gexp(i)],0));var raw=new Poly(dcdata[r],rsp.len()-1),mod=raw.mod(rsp);ecdata[r]=new Array(rsp.len()-1);for(i=0;i<ecdata[r].length;i++){var mi=i+mod.len()-ecdata[r].length;ecdata[r][i]=(mi>=0)?mod.get(mi):0;}}
+var data=[],idx=0;for(i=0;i<maxDc;i++)for(r=0;r<rsBlocks.length;r++)if(i<dcdata[r].length)data[idx++]=dcdata[r][i];for(i=0;i<maxEc;i++)for(r=0;r<rsBlocks.length;r++)if(i<ecdata[r].length)data[idx++]=ecdata[r][i];
+return data;}
+function mapData(data,mask){var inc=-1,row=mc-1,bitIdx=7,byteIdx=0;for(var col=mc-1;col>0;col-=2){if(col==6)col--;while(true){for(var c=0;c<2;c++){if(modules[row][col-c]==null){var dark=byteIdx<data.length&&((data[byteIdx]>>>bitIdx)&1)==1;if(getMask(mask,row,col-c))dark=!dark;modules[row][col-c]=dark;bitIdx--;if(bitIdx==-1){byteIdx++;bitIdx=7;}}}row+=inc;if(row<0||mc<=row){row-=inc;inc=-inc;break;}}}}
+function getLost(){var lp=0;for(var r=0;r<mc;r++)for(var c=0;c<mc;c++){var sc=0,dk=modules[r][c];for(var rr=-1;rr<=1;rr++){if(r+rr<0||mc<=r+rr)continue;for(var cc=-1;cc<=1;cc++){if(c+cc<0||mc<=c+cc)continue;if(rr==0&&cc==0)continue;if(dk==modules[r+rr][c+cc])sc++;}}if(sc>5)lp+=3+sc-5;}for(r=0;r<mc-1;r++)for(c=0;c<mc-1;c++){var ct=0;if(modules[r][c])ct++;if(modules[r+1][c])ct++;if(modules[r][c+1])ct++;if(modules[r+1][c+1])ct++;if(ct==0||ct==4)lp+=3;}return lp;}
+var dataArr=createData();var bestMask=0,bestLost=Infinity;
+for(var m=0;m<8;m++){setTypeInfo(true,m);mapData(dataArr,m);var lp=getLost();if(lp<bestLost){bestLost=lp;bestMask=m;}for(r=0;r<mc;r++)for(c=0;c<mc;c++)if(modules[r][c]!=null&&modules[r][c]!==true&&modules[r][c]!==false)modules[r][c]=null;}
+setTypeInfo(false,bestMask);mapData(dataArr,bestMask);
+var cell=Math.floor(220/mc),margin=Math.floor((220-cell*mc)/2);
+canvas.width=220;canvas.height=220;
+var ctx=canvas.getContext('2d');
+ctx.fillStyle='#fff';ctx.fillRect(0,0,220,220);
+ctx.fillStyle='#000';
+for(r=0;r<mc;r++)for(c=0;c<mc;c++)if(modules[r][c])ctx.fillRect(margin+c*cell,margin+r*cell,cell,cell);
+}
+
+window.showQRModal = function(){
+  const modal=document.getElementById('modal-content');
+  modal.innerHTML=`
+    <div class="modal-handle"></div>
+    <h3>💳 QR รับชำระเงิน</h3>
+    <div style="margin-bottom:14px">
+      <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">จำนวนเงิน (บาท) *</label>
+      <input type="number" id="qr-amount-input" placeholder="500" min="1" step="1" style="width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:16px;outline:none">
+    </div>
+    <button onclick="renderQR()" style="width:100%;padding:10px;background:var(--accent);color:#0f0f0f;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">สร้าง QR</button>
+    <div id="qr-err" style="color:var(--red);font-size:13px;min-height:16px;margin-bottom:8px"></div>
+    <div id="qr-output" style="display:none;text-align:center">
+      <p style="font-size:12px;color:var(--text2);margin-bottom:4px">PromptPay: ${PP_PHONE}</p>
+      <div style="background:#fff;padding:10px;border-radius:var(--r);display:inline-block;margin-bottom:10px">
+        <canvas id="pp-canvas" style="display:block"></canvas>
+      </div>
+      <div style="background:var(--bg3);border-radius:var(--r);padding:10px;margin-bottom:12px">
+        <p style="font-size:12px;color:var(--text2);margin:0 0 2px">จำนวนเงิน</p>
+        <p id="qr-amt-show" style="font-size:24px;font-weight:600;margin:0;color:var(--accent)"></p>
+      </div>
+      <button onclick="dlQR()" style="width:100%;padding:9px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;font-size:13px;cursor:pointer;color:var(--text)">ดาวน์โหลด QR</button>
+    </div>
+    <div style="margin-top:12px;text-align:right"><button class="btn btn-sm" onclick="closeModal()">ปิด</button></div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(()=>document.getElementById('qr-amount-input')?.focus(),100);
+};
+window.renderQR = function(){
+  var amt=parseFloat(document.getElementById('qr-amount-input').value);
+  var err=document.getElementById('qr-err');
+  if(!amt||amt<=0){err.textContent='กรุณากรอกจำนวนเงิน';return;}
+  err.textContent='';
+  try{
+    var payload=buildPPPayload(amt);
+    var canvas=document.getElementById('pp-canvas');
+    drawQR(canvas,payload);
+    document.getElementById('qr-amt-show').textContent='฿'+amt.toLocaleString('th-TH',{minimumFractionDigits:2});
+    document.getElementById('qr-output').style.display='block';
+  }catch(e){err.textContent='สร้างไม่สำเร็จ: '+e.message;}
+};
+window.dlQR = function(){var a=document.createElement('a');a.download='promptpay-qr.png';a.href=document.getElementById('pp-canvas').toDataURL();a.click();};
 
 // ── SETTINGS ──
 window.changePass = function(){
