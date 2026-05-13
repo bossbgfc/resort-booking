@@ -8,127 +8,95 @@
 <title>รีสอร์ท — ระบบจองห้องพัก</title>
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;
-  --border:#2e2e2e;--border2:#3a3a3a;
-  --text:#f0ede8;--text2:#9a9590;--text3:#5c5854;
-  --green:#4ade80;--green-bg:rgba(74,222,128,0.08);
-  --red:#f87171;--red-bg:rgba(248,113,113,0.08);
-  --accent:#c9a96e;--accent-bg:rgba(201,169,110,0.1);
-  --r:10px;--r2:14px;--font:'Sarabun',sans-serif;
-}
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;--border:#2e2e2e;--border2:#3a3a3a;--text:#f0ede8;--text2:#9a9590;--text3:#5c5854;--green:#4ade80;--green-bg:rgba(74,222,128,0.08);--red:#f87171;--red-bg:rgba(248,113,113,0.08);--accent:#c9a96e;--accent-bg:rgba(201,169,110,0.1);--r:10px;--r2:14px;--font:'Sarabun',sans-serif;}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%}
 body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden}
-
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .login-card{width:100%;max-width:340px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:36px 28px}
 .login-logo{text-align:center;margin-bottom:28px}
 .login-logo .icon{font-size:44px;display:block;margin-bottom:10px}
 .login-logo h1{font-size:20px;font-weight:600;color:var(--accent)}
 .login-logo p{font-size:13px;color:var(--text2);margin-top:4px}
-
-label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;letter-spacing:0.04em;text-transform:uppercase}
-input,select{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;appearance:none}
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;letter-spacing:.04em;text-transform:uppercase}
+input,select{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:border-color .2s;-webkit-appearance:none;appearance:none}
 select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239a9590' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
 input:focus,select:focus{border-color:var(--accent)}
 input::placeholder{color:var(--text3)}
 .form-row{margin-bottom:14px}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;color:var(--text);font-family:var(--font);font-size:14px;cursor:pointer;transition:all 0.15s;white-space:nowrap;-webkit-appearance:none}
-.btn:active{transform:scale(0.97)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;color:var(--text);font-family:var(--font);font-size:14px;cursor:pointer;transition:all .15s;white-space:nowrap;-webkit-appearance:none}
+.btn:active{transform:scale(.97)}
 .btn-primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:600}
-.btn-danger{color:var(--red);border-color:rgba(248,113,113,0.3)}
-.btn-share{background:var(--green-bg);color:var(--green);border-color:rgba(74,222,128,0.3)}
+.btn-danger{color:var(--red);border-color:rgba(248,113,113,.3)}
+.btn-share{background:var(--green-bg);color:var(--green);border-color:rgba(74,222,128,.3)}
+.btn-qr{background:var(--accent-bg);color:var(--accent);border-color:rgba(201,169,110,.3)}
 .btn-full{width:100%}
-.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn:disabled{opacity:.4;cursor:not-allowed}
 .btn-sm{padding:7px 13px;font-size:13px}
-
 #app{display:none;min-height:100vh;padding-bottom:80px}
 #app.visible{display:block}
-
-.topbar{position:sticky;top:0;z-index:50;background:rgba(15,15,15,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(15,15,15,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .topbar h1{font-size:16px;font-weight:600;color:var(--accent)}
 .topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
-.role-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(201,169,110,0.2);white-space:nowrap}
-.logout-btn{font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap}
-.sync-status{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
-.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
-.sync-dot.syncing{background:var(--accent);animation:pulse 1s infinite}
-.sync-dot.error{background:var(--red)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
-
-.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(26,26,26,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom))}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:10px;transition:color 0.15s}
+.role-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(201,169,110,.2);white-space:nowrap}
+.logout-btn{font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);display:none}
+.sync-dot.on{display:inline-block;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(26,26,26,.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom))}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:10px;transition:color .15s}
 .nav-item.active{color:var(--accent)}
 .nav-icon{font-size:20px;line-height:1}
-
 .content{padding:16px;max-width:700px;margin:0 auto}
 .section{display:none}.section.active{display:block}
 .section-title{font-size:17px;font-weight:600;margin-bottom:18px}
-
 .summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
 .summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;text-align:center}
 .sc-num{font-size:26px;font-weight:600}
 .sc-label{font-size:11px;color:var(--text2);margin-top:2px}
-
 .date-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
 .date-bar label{margin:0;text-transform:none;font-size:13px;color:var(--text2);flex-shrink:0}
 .date-bar input[type="date"]{flex:1;min-width:140px;padding:8px 12px;font-size:14px}
-
-.cat-label{font-size:11px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:6px}
+.cat-label{font-size:11px;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:6px}
 .cat-label::after{content:'';flex:1;height:1px;background:var(--border)}
-
 .room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:4px}
-.room-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+.room-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden}
 .room-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
 .room-card.available::before{background:var(--green)}
 .room-card.booked::before{background:var(--red)}
-.room-card.booked{background:rgba(248,113,113,0.04)}
-.room-card:active{transform:scale(0.97)}
+.room-card.booked{background:rgba(248,113,113,.04)}
+.room-card:active{transform:scale(.97)}
 .room-name{font-size:13px;font-weight:500;margin-bottom:6px}
 .room-status{font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block}
 .room-status.available{background:var(--green-bg);color:var(--green)}
 .room-status.booked{background:var(--red-bg);color:var(--red)}
 .room-guest{font-size:11px;color:var(--text2);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;align-items:flex-end;justify-content:center}
 .modal-overlay.open{display:flex}
-@media(min-width:480px){
-  .modal-overlay{align-items:center;padding:24px}
-  .modal{border-radius:var(--r2)!important;max-width:440px!important}
-}
+@media(min-width:480px){.modal-overlay{align-items:center;padding:24px}.modal{border-radius:var(--r2)!important;max-width:440px!important}}
 .modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2) var(--r2) 0 0;padding:20px;width:100%;max-height:85vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom))}
 .modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
 .modal h3{font-size:16px;font-weight:600;margin-bottom:14px}
-.modal-info-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px}
-.modal-info-row{font-size:14px;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px}
-.modal-info-row:last-child{margin-bottom:0}
-.modal-info-label{color:var(--text2);font-size:12px;min-width:64px;margin-top:1px;flex-shrink:0}
-.modal-btn-row{display:flex;gap:8px;flex-wrap:wrap}
-
+.info-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.info-row{font-size:14px;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px}
+.info-row:last-child{margin-bottom:0}
+.info-lbl{color:var(--text2);font-size:12px;min-width:64px;margin-top:1px;flex-shrink:0}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap}
 .search-input{width:100%;padding:11px 14px 11px 38px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:15px;outline:none;margin-bottom:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235c5854' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
-.booking-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.bk-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .bi-name{font-size:15px;font-weight:600;margin-bottom:4px}
 .bi-info{font-size:12px;color:var(--text2);margin-bottom:2px}
-
 .settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px}
 .settings-card h3{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
-
-.share-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:300px;overflow-y:auto;color:var(--text2)}
-
+.share-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:260px;overflow-y:auto;color:var(--text2)}
 .msg-text{font-size:13px;margin-top:10px;min-height:20px}
 .empty-state{text-align:center;padding:48px 24px;color:var(--text2)}
 .empty-icon{font-size:40px;display:block;margin-bottom:10px}
 .err{color:var(--red)!important}
 .ok{color:var(--green)!important}
 .loading-state{text-align:center;padding:48px 24px;color:var(--text2);font-size:14px}
-
-@media(min-width:600px){
-  .content{padding:20px 24px}
-  .room-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
-}
+@media(min-width:600px){.content{padding:20px 24px}.room-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}}
 </style>
 </head>
 <body>
@@ -151,9 +119,11 @@ input::placeholder{color:var(--text3)}
 
 <div id="app">
   <div class="topbar">
-    <h1>🏕 รีสอร์ท</h1>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="sync-dot" id="sync-dot"></div>
+      <h1>🏕 รีสอร์ท</h1>
+    </div>
     <div class="topbar-right">
-      <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-txt"></span></div>
       <span class="role-pill" id="role-pill"></span>
       <button class="logout-btn" onclick="doLogout()">ออก</button>
     </div>
@@ -232,27 +202,33 @@ input::placeholder{color:var(--text3)}
   <div class="modal" id="modal-content"></div>
 </div>
 
-<!-- Firebase SDK -->
+<!-- Firebase via importmap to guarantee load order -->
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  }
+}
+</script>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, remove, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyBXbakj53tXoXzsm6d1zQC7Um6m0i4hyiA",
-  authDomain: "resort-booking-8323a.firebaseapp.com",
-  databaseURL: "https://resort-booking-8323a-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "resort-booking-8323a",
-  storageBucket: "resort-booking-8323a.firebasestorage.app",
-  messagingSenderId: "122161653551",
-  appId: "1:122161653551:web:871ec38407a74a6c3163da"
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, push, remove, onValue, off } from 'firebase/database';
+// ── CONFIG ──
+var FB_CONFIG = {
+  apiKey:"AIzaSyBXbakj53tXoXzsm6d1zQC7Um6m0i4hyiA",
+  authDomain:"resort-booking-8323a.firebaseapp.com",
+  databaseURL:"https://resort-booking-8323a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"resort-booking-8323a",
+  storageBucket:"resort-booking-8323a.firebasestorage.app",
+  messagingSenderId:"122161653551",
+  appId:"1:122161653551:web:871ec38407a74a6c3163da"
 };
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const bookingsRef = ref(db, 'bookings');
-
-const TODAY = new Date().toISOString().split('T')[0];
-const ROOMS = [
+var PP_PHONE = '0880005692';
+var DEFAULT_PASS = 'resort1234';
+var TODAY = new Date().toISOString().split('T')[0];
+var ROOMS = [
   {name:'ห้องใหญ่ 1',type:'ห้องใหญ่'},{name:'ห้องใหญ่ 2',type:'ห้องใหญ่'},{name:'ห้องใหญ่ 3',type:'ห้องใหญ่'},
   {name:'ห้องกลาง 1',type:'ห้องกลาง'},{name:'ห้องกลาง 2',type:'ห้องกลาง'},{name:'ห้องกลาง 3',type:'ห้องกลาง'},
   {name:'ห้องกลาง 4',type:'ห้องกลาง'},{name:'ห้องกลาง 5',type:'ห้องกลาง'},{name:'ห้องกลาง 6',type:'ห้องกลาง'},
@@ -263,106 +239,91 @@ const ROOMS = [
   {name:'เต้นท์เล็ก 4',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 5',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 6',type:'เต้นท์เล็ก'},
   {name:'เต้นท์เล็ก 7',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 8',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 9',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 10',type:'เต้นท์เล็ก'}
 ];
-const ICONS = {'ห้องใหญ่':'🏠','ห้องกลาง':'🛏','ห้องเล็ก':'🛖','เต้นท์ใหญ่':'⛺','เต้นท์เล็ก':'🏕'};
-const DEFAULT_PASS = 'resort1234';
+var ICONS = {'ห้องใหญ่':'🏠','ห้องกลาง':'🛏','ห้องเล็ก':'🛖','เต้นท์ใหญ่':'⛺','เต้นท์เล็ก':'🏕'};
+
+// ── Firebase init ──
+var firebaseApp = initializeApp(FB_CONFIG);
+var db = getDatabase(firebaseApp);
+var bookingsRef = ref(db, 'bookings');
+
+var bookings = [], currentRole = null, dbListener = null;
 
 function getPass(){return localStorage.getItem('resort_pass')||DEFAULT_PASS;}
 function setPass(p){localStorage.setItem('resort_pass',p);}
 
-let bookings = [];
-let currentRole = null;
-let dbListener = null;
-
-// ── SYNC STATUS ──
-function setSyncStatus(state){
-  const dot = document.getElementById('sync-dot');
-  const txt = document.getElementById('sync-txt');
-  if(state==='ok'){dot.className='sync-dot';txt.textContent='ซิงค์แล้ว';}
-  else if(state==='syncing'){dot.className='sync-dot syncing';txt.textContent='กำลังซิงค์...';}
-  else{dot.className='sync-dot error';txt.textContent='ออฟไลน์';}
-}
-
 // ── AUTH ──
-document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-window.doLogin = function(){
-  const p=document.getElementById('login-pass').value;
+document.getElementById('login-pass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin();});
+function doLogin(){
+  var p = document.getElementById('login-pass').value;
   if(p===getPass()){currentRole='owner';startApp();}
   else{document.getElementById('login-err').textContent='รหัสผ่านไม่ถูกต้อง';document.getElementById('login-pass').value='';}
-};
+}
 function startApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app').classList.add('visible');
   document.getElementById('role-pill').textContent='👑 เจ้าของ';
   document.getElementById('view-date').value=TODAY;
   document.getElementById('b-checkin').value=TODAY;
-  const d=new Date();d.setDate(d.getDate()+1);
+  var d=new Date();d.setDate(d.getDate()+1);
   document.getElementById('b-checkout').value=d.toISOString().split('T')[0];
   loadBookings();
 }
-window.doLogout = function(){
-  if(dbListener){off(bookingsRef);dbListener=null;}
+function doLogout(){
+  if(dbListener){off(bookingsRef, 'value', dbListener);dbListener=null;}
   currentRole=null;bookings=[];
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('app').classList.remove('visible');
   document.getElementById('login-pass').value='';
   document.getElementById('login-err').textContent='';
-};
+}
 
-// ── FIREBASE REALTIME ──
-window.loadBookings = function(){
-  setSyncStatus('syncing');
-  if(dbListener) off(bookingsRef);
-  dbListener = onValue(bookingsRef, (snapshot)=>{
+// ── FIREBASE ──
+function loadBookings(){
+  document.getElementById('sync-dot').className='sync-dot on';
+  if(dbListener){off(bookingsRef, 'value', dbListener);dbListener=null;}
+  dbListener = onValue(bookingsRef, function(snap){
     bookings=[];
-    const data=snapshot.val();
-    if(data){
-      Object.entries(data).forEach(([key,val])=>{
-        bookings.push({...val, firebaseKey:key});
-      });
-    }
-    bookings.sort((a,b)=>a.checkin>b.checkin?1:-1);
-    setSyncStatus('ok');
+    var data=snap.val();
+    if(data){Object.entries(data).forEach(function(e){bookings.push(Object.assign({},e[1],{fk:e[0]}));});}
+    bookings.sort(function(a,b){return a.checkin>b.checkin?1:-1;});
+    document.getElementById('sync-dot').className='sync-dot';
     renderRooms();
     if(document.getElementById('section-list').classList.contains('active'))renderList();
-    setTimeout(()=>{ document.getElementById('sync-txt').textContent=''; },3000);
-  }, (err)=>{
-    console.error(err);
-    setSyncStatus('error');
-  });
-};
+  },function(){document.getElementById('sync-dot').className='sync-dot';});
+}
 
 // ── TABS ──
-window.showTab = function(t,navId){
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+function showTab(t,navId){
+  document.querySelectorAll('.section').forEach(function(s){s.classList.remove('active');});
+  document.querySelectorAll('.nav-item').forEach(function(n){n.classList.remove('active');});
   document.getElementById('section-'+t).classList.add('active');
   document.getElementById(navId).classList.add('active');
   if(t==='list')renderList();
   if(t==='overview')renderRooms();
   window.scrollTo({top:0,behavior:'smooth'});
-};
+}
 
 // ── ROOMS ──
 function isBooked(roomName,date){
-  return bookings.find(b=>b.room===roomName&&b.checkin<=date&&b.checkout>date);
+  return bookings.find(function(b){return b.room===roomName&&b.checkin<=date&&b.checkout>date;});
 }
 function renderRooms(){
-  const date=document.getElementById('view-date')?.value||TODAY;
-  const c=document.getElementById('rooms-container');
+  var date=document.getElementById('view-date')&&document.getElementById('view-date').value||TODAY;
+  var c=document.getElementById('rooms-container');
   if(!c)return;
-  const cats=['ห้องใหญ่','ห้องกลาง','ห้องเล็ก','เต้นท์ใหญ่','เต้นท์เล็ก'];
-  let booked=0,html='';
-  cats.forEach(cat=>{
-    const rooms=ROOMS.filter(r=>r.type===cat);
-    html+=`<div class="cat-label">${ICONS[cat]} ${cat}</div><div class="room-grid">`;
-    rooms.forEach(r=>{
-      const b=isBooked(r.name,date);
+  var cats=['ห้องใหญ่','ห้องกลาง','ห้องเล็ก','เต้นท์ใหญ่','เต้นท์เล็ก'];
+  var booked=0,html='';
+  cats.forEach(function(cat){
+    var rooms=ROOMS.filter(function(r){return r.type===cat;});
+    html+='<div class="cat-label">'+ICONS[cat]+' '+cat+'</div><div class="room-grid">';
+    rooms.forEach(function(r){
+      var b=isBooked(r.name,date);
       if(b)booked++;
-      html+=`<div class="room-card ${b?'booked':'available'}" onclick="showRoom('${r.name}','${date}')">
-        <div class="room-name">${r.name}</div>
-        <span class="room-status ${b?'booked':'available'}">${b?'จองแล้ว':'ว่าง'}</span>
-        ${b?`<div class="room-guest">${b.name}</div>`:''}
-      </div>`;
+      html+='<div class="room-card '+(b?'booked':'available')+'" onclick="showRoom(\''+r.name+'\',\''+date+'\')">'+
+        '<div class="room-name">'+r.name+'</div>'+
+        '<span class="room-status '+(b?'booked':'available')+'">'+(b?'จองแล้ว':'ว่าง')+'</span>'+
+        (b?'<div class="room-guest">'+b.name+'</div>':'')+
+        '</div>';
     });
     html+='</div>';
   });
@@ -372,299 +333,297 @@ function renderRooms(){
 }
 
 // ── MODAL ──
-window.showRoom = function(roomName,date){
-  const b=isBooked(roomName,date);
-  const modal=document.getElementById('modal-content');
+function showRoom(roomName,date){
+  var b=isBooked(roomName,date);
+  var modal=document.getElementById('modal-content');
   if(b){
-    modal.innerHTML=`
-      <div class="modal-handle"></div>
-      <h3>🚪 ${roomName}</h3>
-      <div class="modal-info-box">
-        <div class="modal-info-row"><span class="modal-info-label">ผู้จอง</span><strong>${b.name}</strong></div>
-        <div class="modal-info-row"><span class="modal-info-label">เบอร์</span>${b.phone}</div>
-        <div class="modal-info-row"><span class="modal-info-label">เช็คอิน</span>${b.checkin}</div>
-        <div class="modal-info-row"><span class="modal-info-label">เช็คเอาท์</span>${b.checkout}</div>
-        ${b.note?`<div class="modal-info-row"><span class="modal-info-label">หมายเหตุ</span>${b.note}</div>`:''}
-      </div>
-      <div class="modal-btn-row">
-        <button class="btn btn-share btn-sm" onclick="shareBooking('${b.firebaseKey}')">📤 ส่งให้คนอื่น</button>
-        <button class="btn btn-sm" style="background:var(--accent-bg);color:var(--accent);border-color:rgba(201,169,110,0.3)" onclick="showQRModal()">💳 QR รับเงิน</button>
-        <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,'\\'')}','${b.room}','${b.checkin}','${b.checkout}')">🗑 ยกเลิก</button>
-        <button class="btn btn-sm" onclick="closeModal()">ปิด</button>
-      </div>`;
+    modal.innerHTML='<div class="modal-handle"></div><h3>🚪 '+roomName+'</h3>'+
+      '<div class="info-box">'+
+        '<div class="info-row"><span class="info-lbl">ผู้จอง</span><strong>'+b.name+'</strong></div>'+
+        '<div class="info-row"><span class="info-lbl">เบอร์</span>'+b.phone+'</div>'+
+        '<div class="info-row"><span class="info-lbl">เช็คอิน</span>'+b.checkin+'</div>'+
+        '<div class="info-row"><span class="info-lbl">เช็คเอาท์</span>'+b.checkout+'</div>'+
+        (b.note?'<div class="info-row"><span class="info-lbl">หมายเหตุ</span>'+b.note+'</div>':'')+
+      '</div>'+
+      '<div class="btn-row">'+
+        '<button class="btn btn-share btn-sm" onclick="shareBooking(\''+b.fk+'\')">📤 ส่งให้คนอื่น</button>'+
+        '<button class="btn btn-qr btn-sm" onclick="showQRModal()">💳 QR รับเงิน</button>'+
+        '<button class="btn btn-danger btn-sm" onclick="askDelete(\''+b.fk+'\',\''+b.name.replace(/'/g,"\\'")+ '\',\''+b.room+'\',\''+b.checkin+'\',\''+b.checkout+'\')">🗑 ยกเลิก</button>'+
+        '<button class="btn btn-sm" onclick="closeModal()">ปิด</button>'+
+      '</div>';
   }else{
-    modal.innerHTML=`
-      <div class="modal-handle"></div>
-      <h3>🚪 ${roomName}</h3>
-      <div style="text-align:center;padding:20px 0 10px;color:var(--green)">✅ ห้องว่าง — ${date}</div>
-      <div class="modal-btn-row">
-        <button class="btn btn-primary" onclick="prefillAndClose('${roomName}')">+ จองห้องนี้</button>
-        <button class="btn" onclick="closeModal()">ปิด</button>
-      </div>`;
+    modal.innerHTML='<div class="modal-handle"></div><h3>🚪 '+roomName+'</h3>'+
+      '<div style="text-align:center;padding:20px 0 10px;color:var(--green)">✅ ห้องว่าง — '+date+'</div>'+
+      '<div class="btn-row">'+
+        '<button class="btn btn-primary" onclick="prefillAndClose(\''+roomName+'\')">+ จองห้องนี้</button>'+
+        '<button class="btn" onclick="closeModal()">ปิด</button>'+
+      '</div>';
   }
   document.getElementById('modal-overlay').classList.add('open');
-};
-window.prefillAndClose = function(roomName){
+}
+function prefillAndClose(roomName){
   document.getElementById('b-room').value=roomName;
-  closeModal();
-  showTab('booking','nav-booking');
-};
-window.closeModal = function(){document.getElementById('modal-overlay').classList.remove('open');};
+  closeModal();showTab('booking','nav-booking');
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
 
 // ── DELETE ──
-window.askDelete = function(firebaseKey,name,room,checkin,checkout){
-  const modal=document.getElementById('modal-content');
-  modal.innerHTML=`
-    <div class="modal-handle"></div>
-    <h3>🗑 ยืนยันการยกเลิก</h3>
-    <div class="modal-info-box" style="margin-bottom:14px">
-      <div class="modal-info-row"><span class="modal-info-label">ผู้จอง</span><strong>${name}</strong></div>
-      <div class="modal-info-row"><span class="modal-info-label">ห้อง</span>${room}</div>
-      <div class="modal-info-row"><span class="modal-info-label">วันที่</span>${checkin} → ${checkout}</div>
-    </div>
-    <p style="font-size:14px;color:var(--text2);margin-bottom:14px">ต้องการยกเลิกการจองนี้ใช่ไหม?</p>
-    <div class="modal-btn-row">
-      <button class="btn btn-danger" onclick="confirmDelete('${firebaseKey}')">🗑 ยืนยันยกเลิก</button>
-      <button class="btn" onclick="closeModal()">ไม่ยกเลิก</button>
-    </div>`;
+function askDelete(fk,name,room,checkin,checkout){
+  var modal=document.getElementById('modal-content');
+  modal.innerHTML='<div class="modal-handle"></div><h3>🗑 ยืนยันการยกเลิก</h3>'+
+    '<div class="info-box" style="margin-bottom:14px">'+
+      '<div class="info-row"><span class="info-lbl">ผู้จอง</span><strong>'+name+'</strong></div>'+
+      '<div class="info-row"><span class="info-lbl">ห้อง</span>'+room+'</div>'+
+      '<div class="info-row"><span class="info-lbl">วันที่</span>'+checkin+' → '+checkout+'</div>'+
+    '</div>'+
+    '<p style="font-size:14px;color:var(--text2);margin-bottom:14px">ต้องการยกเลิกการจองนี้ใช่ไหม?</p>'+
+    '<div class="btn-row">'+
+      '<button class="btn btn-danger" onclick="confirmDelete(\''+fk+'\')">🗑 ยืนยันยกเลิก</button>'+
+      '<button class="btn" onclick="closeModal()">ไม่ยกเลิก</button>'+
+    '</div>';
   document.getElementById('modal-overlay').classList.add('open');
-};
-window.confirmDelete = async function(firebaseKey){
-  try{
-    await remove(ref(db,'bookings/'+firebaseKey));
-    closeModal();
-  }catch(e){
-    alert('ลบไม่สำเร็จ: '+e.message);
-  }
-};
+}
+function confirmDelete(fk){
+  remove(ref(db,'bookings/'+fk)).then(function(){closeModal();}).catch(function(e){alert('ลบไม่สำเร็จ: '+e.message);});
+}
 
 // ── ADD BOOKING ──
-window.addBooking = async function(){
-  const name=document.getElementById('b-name').value.trim();
-  const phone=document.getElementById('b-phone').value.trim();
-  const room=document.getElementById('b-room').value;
-  const checkin=document.getElementById('b-checkin').value;
-  const checkout=document.getElementById('b-checkout').value;
-  const note=document.getElementById('b-note').value.trim();
-  const msg=document.getElementById('booking-msg');
+function addBooking(){
+  var name=document.getElementById('b-name').value.trim();
+  var phone=document.getElementById('b-phone').value.trim();
+  var room=document.getElementById('b-room').value;
+  var checkin=document.getElementById('b-checkin').value;
+  var checkout=document.getElementById('b-checkout').value;
+  var note=document.getElementById('b-note').value.trim();
+  var msg=document.getElementById('booking-msg');
   msg.className='msg-text';msg.textContent='';
   if(!name||!phone||!room||!checkin||!checkout){msg.className='msg-text err';msg.textContent='⚠ กรุณากรอกข้อมูลให้ครบถ้วน';return;}
   if(checkin>=checkout){msg.className='msg-text err';msg.textContent='⚠ วันเช็คเอาท์ต้องหลังวันเช็คอิน';return;}
-  const conflict=bookings.find(b=>b.room===room&&b.checkin<checkout&&b.checkout>checkin);
-  if(conflict){msg.className='msg-text err';msg.textContent=`⚠ ห้องนี้มีการจองซ้อนกัน (${conflict.name})`;return;}
-  const btn=document.getElementById('save-btn');
+  var conflict=bookings.find(function(b){return b.room===room&&b.checkin<checkout&&b.checkout>checkin;});
+  if(conflict){msg.className='msg-text err';msg.textContent='⚠ ห้องนี้มีการจองซ้อนกัน ('+conflict.name+')';return;}
+  var btn=document.getElementById('save-btn');
   btn.disabled=true;btn.textContent='⏳ กำลังบันทึก...';
-  try{
-    await push(bookingsRef,{name,phone,room,checkin,checkout,note,created:new Date().toISOString()});
-    msg.className='msg-text ok';msg.textContent=`✅ บันทึกสำเร็จ — ${name} | ${room}`;
-    clearForm();
-  }catch(e){
-    msg.className='msg-text err';msg.textContent='⚠ บันทึกไม่สำเร็จ: '+e.message;
-  }
-  btn.disabled=false;btn.textContent='✓ บันทึกการจอง';
-};
-window.clearForm = function(){
-  ['b-name','b-phone','b-note'].forEach(id=>document.getElementById(id).value='');
+  push(bookingsRef, {name:name,phone:phone,room:room,checkin:checkin,checkout:checkout,note:note,created:new Date().toISOString()})
+    .then(function(){
+      msg.className='msg-text ok';msg.textContent='✅ บันทึกสำเร็จ — '+name+' | '+room;
+      clearForm();
+    })
+    .catch(function(e){msg.className='msg-text err';msg.textContent='⚠ บันทึกไม่สำเร็จ: '+e.message;})
+    .finally(function(){btn.disabled=false;btn.textContent='✓ บันทึกการจอง';});
+}
+function clearForm(){
+  ['b-name','b-phone','b-note'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('b-room').value='';
   document.getElementById('b-checkin').value=TODAY;
-  const d=new Date();d.setDate(d.getDate()+1);
+  var d=new Date();d.setDate(d.getDate()+1);
   document.getElementById('b-checkout').value=d.toISOString().split('T')[0];
-};
+}
 
 // ── LIST ──
 function renderList(){
-  const q=(document.getElementById('search-q')?.value||'').toLowerCase();
-  const c=document.getElementById('booking-list-container');
+  var q=(document.getElementById('search-q')&&document.getElementById('search-q').value||'').toLowerCase();
+  var c=document.getElementById('booking-list-container');
   if(!c)return;
-  let list=bookings.filter(b=>!q||b.name?.toLowerCase().includes(q)||b.phone?.includes(q)||b.room?.toLowerCase().includes(q));
+  var list=bookings.filter(function(b){return!q||b.name&&b.name.toLowerCase().includes(q)||b.phone&&b.phone.includes(q)||b.room&&b.room.toLowerCase().includes(q);});
   if(!list.length){c.innerHTML='<div class="empty-state"><span class="empty-icon">📭</span>ไม่มีข้อมูลการจอง</div>';return;}
-  c.innerHTML=list.map(b=>`
-    <div class="booking-item">
-      <div style="min-width:0">
-        <div class="bi-name">${b.name}</div>
-        <div class="bi-info">📞 ${b.phone}</div>
-        <div class="bi-info">🚪 ${b.room}</div>
-        <div class="bi-info">📅 ${b.checkin} → ${b.checkout}</div>
-        ${b.note?`<div class="bi-info">📝 ${b.note}</div>`:''}
-      </div>
-      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">
-        <button class="btn btn-share btn-sm" onclick="shareBooking('${b.firebaseKey}')">📤</button>
-        <button class="btn btn-sm" style="background:var(--accent-bg);color:var(--accent);border-color:rgba(201,169,110,0.3)" onclick="showQRModal()">💳</button>
-        <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,"\\'")}','${b.room}','${b.checkin}','${b.checkout}')">🗑</button>
-      </div>
-    </div>`).join('');
+  c.innerHTML=list.map(function(b){
+    return '<div class="bk-item">'+
+      '<div style="min-width:0">'+
+        '<div class="bi-name">'+b.name+'</div>'+
+        '<div class="bi-info">📞 '+b.phone+'</div>'+
+        '<div class="bi-info">🚪 '+b.room+'</div>'+
+        '<div class="bi-info">📅 '+b.checkin+' → '+b.checkout+'</div>'+
+        (b.note?'<div class="bi-info">📝 '+b.note+'</div>':'')+
+      '</div>'+
+      '<div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">'+
+        '<button class="btn btn-share btn-sm" onclick="shareBooking(\''+b.fk+'\')">📤</button>'+
+        '<button class="btn btn-qr btn-sm" onclick="showQRModal()">💳</button>'+
+        '<button class="btn btn-danger btn-sm" onclick="askDelete(\''+b.fk+'\',\''+b.name.replace(/'/g,"\\'")+'\',\''+b.room+'\',\''+b.checkin+'\',\''+b.checkout+'\')">🗑</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
 }
 
 // ── SHARE ──
-window.shareBooking = function(firebaseKey){
-  const b=bookings.find(x=>x.firebaseKey===firebaseKey);
+function shareBooking(fk){
+  var b=bookings.find(function(x){return x.fk===fk;});
   if(!b)return;
-  const text=buildShareText(b);
-  showShareModal(text,'📤 ส่งรายละเอียดการจอง');
-};
-window.showShareAll = function(){
+  showShareModal(buildShareText(b),'📤 ส่งรายละเอียดการจอง');
+}
+function showShareAll(){
   if(!bookings.length){alert('ยังไม่มีข้อมูลการจอง');return;}
-  let text=`🏕 รีสอร์ท — สรุปการจองทั้งหมด (${bookings.length} รายการ)\n${'━'.repeat(24)}\n`;
-  bookings.forEach((b,i)=>{
-    text+=`${i+1}. ${b.name} | ${b.room}\n   📞 ${b.phone} | 📅 ${b.checkin} → ${b.checkout}${b.note?`\n   📝 ${b.note}`:''}\n\n`;
+  var text='🏕 รีสอร์ท — สรุปการจองทั้งหมด ('+bookings.length+' รายการ)\n'+'━'.repeat(24)+'\n';
+  bookings.forEach(function(b,i){
+    text+=(i+1)+'. '+b.name+' | '+b.room+'\n   📞 '+b.phone+' | 📅 '+b.checkin+' → '+b.checkout+(b.note?'\n   📝 '+b.note:'')+'\n\n';
   });
   showShareModal(text,'📤 ส่งสรุปการจองทั้งหมด');
-};
+}
 function buildShareText(b){
-  return `🏕 รีสอร์ท — ยืนยันการจอง\n${'━'.repeat(20)}\n👤 ชื่อ: ${b.name}\n📞 เบอร์: ${b.phone}\n🚪 ห้อง: ${b.room}\n📅 เช็คอิน: ${b.checkin}\n📅 เช็คเอาท์: ${b.checkout}${b.note?`\n📝 หมายเหตุ: ${b.note}`:''}\n${'━'.repeat(20)}\nขอบคุณที่ใช้บริการครับ/ค่ะ`;
+  return '🏕 รีสอร์ท — ยืนยันการจอง\n'+'━'.repeat(20)+'\n👤 ชื่อ: '+b.name+'\n📞 เบอร์: '+b.phone+'\n🚪 ห้อง: '+b.room+'\n📅 เช็คอิน: '+b.checkin+'\n📅 เช็คเอาท์: '+b.checkout+(b.note?'\n📝 หมายเหตุ: '+b.note:'')+'\n'+'━'.repeat(20)+'\nขอบคุณที่ใช้บริการครับ/ค่ะ';
 }
 function showShareModal(text,title){
-  const modal=document.getElementById('modal-content');
-  const escaped=text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  modal.innerHTML=`
-    <div class="modal-handle"></div>
-    <h3>${title}</h3>
-    <div class="share-box">${escaped}</div>
-    <div class="modal-btn-row">
-      <button class="btn btn-primary" onclick="copyText()">📋 คัดลอก</button>
-      <button class="btn btn-share" onclick="lineShare()">💬 ส่ง Line</button>
-      <button class="btn btn-sm" onclick="closeModal()">ปิด</button>
-    </div>
-    <div class="msg-text ok" id="copy-msg" style="text-align:center"></div>`;
+  var modal=document.getElementById('modal-content');
+  var escaped=text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  modal.innerHTML='<div class="modal-handle"></div><h3>'+title+'</h3>'+
+    '<div class="share-box">'+escaped+'</div>'+
+    '<div class="btn-row">'+
+      '<button class="btn btn-primary" onclick="copyText()">📋 คัดลอก</button>'+
+      '<button class="btn btn-share" onclick="lineShare()">💬 ส่ง Line</button>'+
+      '<button class="btn btn-sm" onclick="closeModal()">ปิด</button>'+
+    '</div>'+
+    '<div class="msg-text ok" id="copy-msg" style="text-align:center"></div>';
   window._shareText=text;
   document.getElementById('modal-overlay').classList.add('open');
 }
-window.copyText = function(){
-  navigator.clipboard.writeText(window._shareText||'').then(()=>{
+function copyText(){
+  navigator.clipboard.writeText(window._shareText||'').then(function(){
     document.getElementById('copy-msg').textContent='✅ คัดลอกแล้ว!';
-  }).catch(()=>{
-    const ta=document.createElement('textarea');ta.value=window._shareText||'';
+  }).catch(function(){
+    var ta=document.createElement('textarea');ta.value=window._shareText||'';
     document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
     document.getElementById('copy-msg').textContent='✅ คัดลอกแล้ว!';
   });
-};
-window.lineShare = function(){
-  window.open('https://line.me/R/msg/text/?'+encodeURIComponent(window._shareText||''),'_blank');
-};
+}
+function lineShare(){window.open('https://line.me/R/msg/text/?'+encodeURIComponent(window._shareText||''),'_blank');}
 
 // ── PROMPTPAY QR ──
-const PP_PHONE = '0880005692';
 function crc16pp(s){var c=0xFFFF;for(var i=0;i<s.length;i++){c^=s.charCodeAt(i)<<8;for(var j=0;j<8;j++)c=(c&0x8000)?(c<<1)^0x1021:(c<<1);}return(c&0xFFFF).toString(16).toUpperCase().padStart(4,'0');}
 function tlv(id,v){return id+String(v).length.toString().padStart(2,'0')+v;}
 function buildPPPayload(amount){
   var acc='0066'+PP_PHONE.slice(1);
-  var aid=tlv('00','A000000677010111');
-  var acct=tlv('01',acc);
-  var p=tlv('00','01')+tlv('26',aid+acct)+tlv('53','764');
+  var p=tlv('00','01')+tlv('26',tlv('00','A000000677010111')+tlv('01',acc))+tlv('53','764');
   if(amount>0)p+=tlv('54',parseFloat(amount).toFixed(2));
   p+=tlv('58','TH')+tlv('59','N/A')+tlv('60','Bangkok')+'6304';
   return p+crc16pp(p);
 }
-function getQRType(len){if(len<=32)return 2;if(len<=53)return 3;if(len<=78)return 4;if(len<=106)return 5;return 6;}
 
-// Embedded QR engine
-function drawQR(canvas,text){
-var QRErrorCorrectLevel={M:0,L:1,H:2,Q:3};
-var PATTERN_POSITION_TABLE=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42]];
-var G15=(1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|(1<<0);
-var G15_MASK=(1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
-var G18=(1<<12)|(1<<11)|(1<<10)|(1<<9)|(1<<8)|(1<<5)|(1<<2)|(1<<0);
-function getBCHDigit(d){var r=0;while(d!=0){r++;d>>>=1;}return r;}
-function getBCHTypeInfo(data){var d=data<<10;while(getBCHDigit(d)-getBCHDigit(G15)>=0)d^=(G15<<(getBCHDigit(d)-getBCHDigit(G15)));return((data<<10)|d)^G15_MASK;}
-function getBCHTypeNumber(data){var d=data<<12;while(getBCHDigit(d)-getBCHDigit(G18)>=0)d^=(G18<<(getBCHDigit(d)-getBCHDigit(G18)));return(data<<12)|d;}
-var EXP=[],LOG=[];for(var i=0;i<8;i++)EXP[i]=1<<i;for(i=8;i<256;i++)EXP[i]=EXP[i-4]^EXP[i-5]^EXP[i-6]^EXP[i-8];for(i=0;i<255;i++)LOG[EXP[i]]=i;
-function gexp(n){while(n<0)n+=255;while(n>=256)n-=255;return EXP[n];}
-function glog(n){if(n<1)throw new Error('glog');return LOG[n];}
-function Poly(num,shift){var o=0;while(o<num.length&&num[o]==0)o++;this.num=new Array(num.length-o+shift);for(var i=0;i<num.length-o;i++)this.num[i]=num[i+o];}
-Poly.prototype.get=function(i){return this.num[i];};Poly.prototype.len=function(){return this.num.length;};
-Poly.prototype.mul=function(e){var n=new Array(this.len()+e.len()-1);for(var i=0;i<this.len();i++)for(var j=0;j<e.len();j++)n[i+j]^=gexp(glog(this.get(i))+glog(e.get(j)));return new Poly(n,0);};
-Poly.prototype.mod=function(e){if(this.len()-e.len()<0)return this;var r=glog(this.get(0))-glog(e.get(0)),n=new Array(this.len());for(var i=0;i<this.len();i++)n[i]=this.get(i);for(i=0;i<e.len();i++)n[i]^=gexp(glog(e.get(i))+r);return new Poly(n,0).mod(e);};
-var RS_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12]];
-function getRSBlocks(tn,ecl){var t=RS_TABLE[(tn-1)*4+(ecl==0?1:ecl==1?0:ecl==3?2:3)],l=[],i;for(i=0;i<t.length/3;i++)for(var j=0;j<t[i*3];j++)l.push({total:t[i*3+1],data:t[i*3+2]});return l;}
-function getMask(p,i,j){switch(p){case 0:return(i+j)%2==0;case 1:return i%2==0;case 2:return j%3==0;case 3:return(i+j)%3==0;case 4:return(Math.floor(i/2)+Math.floor(j/3))%2==0;case 5:return(i*j)%2+(i*j)%3==0;case 6:return((i*j)%2+(i*j)%3)%2==0;case 7:return((i*j)%3+(i+j)%2)%2==0;}}
-var typeNum=getQRType(text.length);
-var modules=[];var mc=typeNum*4+17;
-for(var r=0;r<mc;r++){modules[r]=new Array(mc);for(var c=0;c<mc;c++)modules[r][c]=null;}
-function setFinder(row,col){for(var r=-1;r<=7;r++){if(row+r<=-1||mc<=row+r)continue;for(var c=-1;c<=7;c++){if(col+c<=-1||mc<=col+c)continue;modules[row+r][col+c]=((0<=r&&r<=6&&(c==0||c==6))||(0<=c&&c<=6&&(r==0||r==6))||(2<=r&&r<=4&&2<=c&&c<=4));}}}
-setFinder(0,0);setFinder(mc-7,0);setFinder(0,mc-7);
-for(r=8;r<mc-8;r++)if(modules[r][6]==null)modules[r][6]=(r%2==0);
-for(var c=8;c<mc-8;c++)if(modules[6][c]==null)modules[6][c]=(c%2==0);
-var pos=PATTERN_POSITION_TABLE[typeNum-1]||[];
-for(i=0;i<pos.length;i++)for(var j=0;j<pos.length;j++){var row=pos[i],col=pos[j];if(modules[row][col]!=null)continue;for(var rr=-2;rr<=2;rr++)for(var cc=-2;cc<=2;cc++)modules[row+rr][col+cc]=(rr==-2||rr==2||cc==-2||cc==2||(rr==0&&cc==0));}
-function setTypeInfo(test,mask){var data=(0<<3)|mask,bits=getBCHTypeInfo(data);for(i=0;i<15;i++){var mod=(!test&&((bits>>i)&1)==1);if(i<6)modules[i][8]=mod;else if(i<8)modules[i+1][8]=mod;else modules[mc-15+i][8]=mod;}for(i=0;i<15;i++){var mod=(!test&&((bits>>i)&1)==1);if(i<8)modules[8][mc-i-1]=mod;else if(i<9)modules[8][15-i-1+1]=mod;else modules[8][15-i-1]=mod;}modules[mc-8][8]=!test;}
-function createData(){var buf=[],len=0;var mode=4,dataLen=text.length;buf[0]=((mode<<4)|((dataLen>>4)&0x0f));buf[1]=((dataLen&0x0f)<<4);var idx=12,bi=1;for(var i=0;i<text.length;i++){var code=text.charCodeAt(i);buf[bi]|=(code>>idx);bi++;if(bi>=buf.length)buf.push(0);buf[bi]|=(code<<(8-idx))&0xff;idx+=8-8;if(idx<=0){idx+=8;}}
-var bb={buf:[],len:0};function putB(num,length){for(var i=0;i<length;i++){var bufIdx=Math.floor(bb.len/8);if(bb.buf.length<=bufIdx)bb.buf.push(0);if(((num>>>(length-i-1))&1)==1)bb.buf[bufIdx]|=(0x80>>>(bb.len%8));bb.len++;}}
-putB(4,4);putB(text.length,8);for(var i=0;i<text.length;i++)putB(text.charCodeAt(i),8);
-var rsBlocks=getRSBlocks(typeNum,0);var totalData=0;for(i=0;i<rsBlocks.length;i++)totalData+=rsBlocks[i].data;
-if(bb.len+4<=totalData*8)putB(0,4);
-while(bb.len%8!=0)bb.buf[Math.floor(bb.len/8)]|=(0>>>(bb.len%8)),bb.len++;
-while(bb.len<totalData*8){putB(0xEC,8);if(bb.len<totalData*8)putB(0x11,8);}
-var dcdata=[],ecdata=[],maxDc=0,maxEc=0,offset=0;
-for(r=0;r<rsBlocks.length;r++){var dc=rsBlocks[r].data,ec=rsBlocks[r].total-dc;maxDc=Math.max(maxDc,dc);maxEc=Math.max(maxEc,ec);dcdata[r]=new Array(dc);for(i=0;i<dc;i++)dcdata[r][i]=0xff&bb.buf[i+offset];offset+=dc;var rsp=new Poly([1],0);for(i=0;i<ec;i++)rsp=rsp.mul(new Poly([1,gexp(i)],0));var raw=new Poly(dcdata[r],rsp.len()-1),mod=raw.mod(rsp);ecdata[r]=new Array(rsp.len()-1);for(i=0;i<ecdata[r].length;i++){var mi=i+mod.len()-ecdata[r].length;ecdata[r][i]=(mi>=0)?mod.get(mi):0;}}
-var data=[],idx=0;for(i=0;i<maxDc;i++)for(r=0;r<rsBlocks.length;r++)if(i<dcdata[r].length)data[idx++]=dcdata[r][i];for(i=0;i<maxEc;i++)for(r=0;r<rsBlocks.length;r++)if(i<ecdata[r].length)data[idx++]=ecdata[r][i];
-return data;}
-function mapData(data,mask){var inc=-1,row=mc-1,bitIdx=7,byteIdx=0;for(var col=mc-1;col>0;col-=2){if(col==6)col--;while(true){for(var c=0;c<2;c++){if(modules[row][col-c]==null){var dark=byteIdx<data.length&&((data[byteIdx]>>>bitIdx)&1)==1;if(getMask(mask,row,col-c))dark=!dark;modules[row][col-c]=dark;bitIdx--;if(bitIdx==-1){byteIdx++;bitIdx=7;}}}row+=inc;if(row<0||mc<=row){row-=inc;inc=-inc;break;}}}}
-function getLost(){var lp=0;for(var r=0;r<mc;r++)for(var c=0;c<mc;c++){var sc=0,dk=modules[r][c];for(var rr=-1;rr<=1;rr++){if(r+rr<0||mc<=r+rr)continue;for(var cc=-1;cc<=1;cc++){if(c+cc<0||mc<=c+cc)continue;if(rr==0&&cc==0)continue;if(dk==modules[r+rr][c+cc])sc++;}}if(sc>5)lp+=3+sc-5;}for(r=0;r<mc-1;r++)for(c=0;c<mc-1;c++){var ct=0;if(modules[r][c])ct++;if(modules[r+1][c])ct++;if(modules[r][c+1])ct++;if(modules[r+1][c+1])ct++;if(ct==0||ct==4)lp+=3;}return lp;}
-var dataArr=createData();var bestMask=0,bestLost=Infinity;
-for(var m=0;m<8;m++){setTypeInfo(true,m);mapData(dataArr,m);var lp=getLost();if(lp<bestLost){bestLost=lp;bestMask=m;}for(r=0;r<mc;r++)for(c=0;c<mc;c++)if(modules[r][c]!=null&&modules[r][c]!==true&&modules[r][c]!==false)modules[r][c]=null;}
-setTypeInfo(false,bestMask);mapData(dataArr,bestMask);
-var cell=Math.floor(220/mc),margin=Math.floor((220-cell*mc)/2);
-canvas.width=220;canvas.height=220;
-var ctx=canvas.getContext('2d');
-ctx.fillStyle='#fff';ctx.fillRect(0,0,220,220);
-ctx.fillStyle='#000';
-for(r=0;r<mc;r++)for(c=0;c<mc;c++)if(modules[r][c])ctx.fillRect(margin+c*cell,margin+r*cell,cell,cell);
+function showQRModal(){
+  var modal=document.getElementById('modal-content');
+  modal.innerHTML='<div class="modal-handle"></div><h3>💳 QR รับชำระเงิน</h3>'+
+    '<div style="margin-bottom:14px">'+
+      '<label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">จำนวนเงิน (บาท) *</label>'+
+      '<input type="number" id="qr-amt-input" placeholder="500" min="1" step="1" style="width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:16px;outline:none">'+
+    '</div>'+
+    '<button onclick="renderQR()" style="width:100%;padding:10px;background:var(--accent);color:#0f0f0f;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">สร้าง QR</button>'+
+    '<div id="qr-err" style="color:var(--red);font-size:13px;min-height:16px;margin-bottom:8px"></div>'+
+    '<div id="qr-output" style="display:none;text-align:center">'+
+      '<p style="font-size:12px;color:var(--text2);margin-bottom:4px">PromptPay: '+PP_PHONE+'</p>'+
+      '<div style="background:#fff;padding:10px;border-radius:var(--r);display:inline-block;margin-bottom:10px">'+
+        '<canvas id="pp-canvas" style="display:block"></canvas>'+
+      '</div>'+
+      '<div style="background:var(--bg3);border-radius:var(--r);padding:10px;margin-bottom:12px">'+
+        '<p style="font-size:12px;color:var(--text2);margin:0 0 2px">จำนวนเงิน</p>'+
+        '<p id="qr-amt-show" style="font-size:24px;font-weight:600;margin:0;color:var(--accent)"></p>'+
+      '</div>'+
+      '<button onclick="dlQR()" style="width:100%;padding:9px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;font-size:13px;cursor:pointer;color:var(--text)">ดาวน์โหลด QR</button>'+
+    '</div>'+
+    '<div style="margin-top:12px;text-align:right"><button class="btn btn-sm" onclick="closeModal()">ปิด</button></div>';
+  document.getElementById('modal-overlay').classList.add('open');
+  setTimeout(function(){var el=document.getElementById('qr-amt-input');if(el)el.focus();},100);
 }
 
-window.showQRModal = function(){
-  const modal=document.getElementById('modal-content');
-  modal.innerHTML=`
-    <div class="modal-handle"></div>
-    <h3>💳 QR รับชำระเงิน</h3>
-    <div style="margin-bottom:14px">
-      <label style="font-size:12px;color:var(--text2);display:block;margin-bottom:6px">จำนวนเงิน (บาท) *</label>
-      <input type="number" id="qr-amount-input" placeholder="500" min="1" step="1" style="width:100%;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-size:16px;outline:none">
-    </div>
-    <button onclick="renderQR()" style="width:100%;padding:10px;background:var(--accent);color:#0f0f0f;border:none;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">สร้าง QR</button>
-    <div id="qr-err" style="color:var(--red);font-size:13px;min-height:16px;margin-bottom:8px"></div>
-    <div id="qr-output" style="display:none;text-align:center">
-      <p style="font-size:12px;color:var(--text2);margin-bottom:4px">PromptPay: ${PP_PHONE}</p>
-      <div style="background:#fff;padding:10px;border-radius:var(--r);display:inline-block;margin-bottom:10px">
-        <canvas id="pp-canvas" style="display:block"></canvas>
-      </div>
-      <div style="background:var(--bg3);border-radius:var(--r);padding:10px;margin-bottom:12px">
-        <p style="font-size:12px;color:var(--text2);margin:0 0 2px">จำนวนเงิน</p>
-        <p id="qr-amt-show" style="font-size:24px;font-weight:600;margin:0;color:var(--accent)"></p>
-      </div>
-      <button onclick="dlQR()" style="width:100%;padding:9px;border:1px solid var(--border2);border-radius:var(--r);background:transparent;font-size:13px;cursor:pointer;color:var(--text)">ดาวน์โหลด QR</button>
-    </div>
-    <div style="margin-top:12px;text-align:right"><button class="btn btn-sm" onclick="closeModal()">ปิด</button></div>`;
-  document.getElementById('modal-overlay').classList.add('open');
-  setTimeout(()=>document.getElementById('qr-amount-input')?.focus(),100);
-};
-window.renderQR = function(){
-  var amt=parseFloat(document.getElementById('qr-amount-input').value);
+function renderQR(){
+  var amt=parseFloat(document.getElementById('qr-amt-input').value);
   var err=document.getElementById('qr-err');
   if(!amt||amt<=0){err.textContent='กรุณากรอกจำนวนเงิน';return;}
   err.textContent='';
   try{
     var payload=buildPPPayload(amt);
     var canvas=document.getElementById('pp-canvas');
-    drawQR(canvas,payload);
+    drawQRCanvas(canvas,payload,220);
     document.getElementById('qr-amt-show').textContent='฿'+amt.toLocaleString('th-TH',{minimumFractionDigits:2});
     document.getElementById('qr-output').style.display='block';
   }catch(e){err.textContent='สร้างไม่สำเร็จ: '+e.message;}
-};
-window.dlQR = function(){var a=document.createElement('a');a.download='promptpay-qr.png';a.href=document.getElementById('pp-canvas').toDataURL();a.click();};
+}
+function dlQR(){var a=document.createElement('a');a.download='promptpay-qr.png';a.href=document.getElementById('pp-canvas').toDataURL();a.click();}
+
+// ── QR ENGINE ──
+function drawQRCanvas(canvas,text,size){
+  var q=createQR(text);var mc=q.length;var cell=Math.floor(size/mc);var mg=Math.floor((size-cell*mc)/2);
+  canvas.width=size;canvas.height=size;
+  var ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,size,size);ctx.fillStyle='#000';
+  for(var r=0;r<mc;r++)for(var c=0;c<mc;c++)if(q[r][c])ctx.fillRect(mg+c*cell,mg+r*cell,cell,cell);
+}
+function createQR(text){
+  var bytes=[];for(var i=0;i<text.length;i++)bytes.push(text.charCodeAt(i));
+  var tn=1;if(bytes.length>17)tn=2;if(bytes.length>32)tn=3;if(bytes.length>53)tn=4;if(bytes.length>78)tn=5;if(bytes.length>106)tn=6;
+  var mc=tn*4+17;var mod=[];for(var r=0;r<mc;r++){mod[r]=new Array(mc).fill(null);}
+  function setFinder(row,col){for(var r=-1;r<=7;r++)for(var c=-1;c<=7;c++){if(row+r<0||row+r>=mc||col+c<0||col+c>=mc)continue;mod[row+r][col+c]=((r>=0&&r<=6&&(c===0||c===6))||(c>=0&&c<=6&&(r===0||r===6))||(r>=2&&r<=4&&c>=2&&c<=4));}}
+  setFinder(0,0);setFinder(mc-7,0);setFinder(0,mc-7);
+  for(var r=8;r<mc-8;r++)if(mod[r][6]===null)mod[r][6]=(r%2===0);
+  for(var c=8;c<mc-8;c++)if(mod[6][c]===null)mod[6][c]=(c%2===0);
+  var PP=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38]];
+  var pp=PP[tn-1]||[];
+  for(var i=0;i<pp.length;i++)for(var j=0;j<pp.length;j++){var pr=pp[i],pc=pp[j];if(mod[pr][pc]!==null)continue;for(var rr=-2;rr<=2;rr++)for(var cc=-2;cc<=2;cc++)mod[pr+rr][pc+cc]=(rr===-2||rr===2||cc===-2||cc===2||(rr===0&&cc===0));}
+  var G15=(1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|(1<<0),G15M=(1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
+  function bchd(d){var r=0;while(d){r++;d>>>=1;}return r;}
+  function bchTI(data){var d=data<<10;while(bchd(d)-bchd(G15)>=0)d^=(G15<<(bchd(d)-bchd(G15)));return((data<<10)|d)^G15M;}
+  function setTI(test,mask){var bits=bchTI((0<<3)|mask);for(var i=0;i<15;i++){var v=(!test&&((bits>>i)&1)===1);if(i<6)mod[i][8]=v;else if(i<8)mod[i+1][8]=v;else mod[mc-15+i][8]=v;}for(i=0;i<15;i++){var v=(!test&&((bits>>i)&1)===1);if(i<8)mod[8][mc-i-1]=v;else if(i<9)mod[8][15-i]=v;else mod[8][15-i-1]=v;}mod[mc-8][8]=!test;}
+  var EXP=new Array(256),LOG=new Array(256);
+  for(i=0;i<8;i++)EXP[i]=1<<i;for(i=8;i<256;i++)EXP[i]=EXP[i-4]^EXP[i-5]^EXP[i-6]^EXP[i-8];for(i=0;i<255;i++)LOG[EXP[i]]=i;
+  function gexp(n){while(n<0)n+=255;while(n>=256)n-=255;return EXP[n];}function glog(n){return LOG[n];}
+  function polyMul(a,b){var n=new Array(a.length+b.length-1).fill(0);for(i=0;i<a.length;i++)for(j=0;j<b.length;j++)n[i+j]^=gexp(glog(a[i])+glog(b[j]));return n;}
+  function polyMod(a,b){if(a.length<b.length)return a;var r=glog(a[0])-glog(b[0]),n=a.slice();for(i=0;i<b.length;i++)n[i]^=gexp(glog(b[i])+r);return polyMod(n.slice(1),b);}
+  var RST=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12]];
+  var rst=RST[(tn-1)*4+1];var rsb=[];for(i=0;i<rst.length/3;i++)for(j=0;j<rst[i*3];j++)rsb.push({total:rst[i*3+1],data:rst[i*3+2]});
+  var totalData=rsb.reduce(function(s,b){return s+b.data;},0);
+  var buf=[];function putB(num,len){for(var i=0;i<len;i++){var bi=Math.floor(buf.length*1);var idx=buf.length;if(idx>=buf.length)buf.push(0);buf[idx-1]|=0;}}
+  var bb=[],blen=0;
+  function put(num,len){for(var i=0;i<len;i++){var bi=Math.floor(blen/8);if(bb.length<=bi)bb.push(0);if(((num>>>(len-i-1))&1))bb[bi]|=(0x80>>>(blen%8));blen++;}}
+  put(4,4);put(bytes.length,8);for(i=0;i<bytes.length;i++)put(bytes[i],8);
+  if(blen+4<=totalData*8)put(0,4);
+  while(blen%8)put(0,1);
+  while(blen<totalData*8){put(0xEC,8);if(blen<totalData*8)put(0x11,8);}
+  var dc=[],ec=[],offset=0,maxDc=0,maxEc=0;
+  for(r=0;r<rsb.length;r++){var dCount=rsb[r].data,eCount=rsb[r].total-dCount;maxDc=Math.max(maxDc,dCount);maxEc=Math.max(maxEc,eCount);dc[r]=[];for(i=0;i<dCount;i++)dc[r].push(0xff&bb[i+offset]);offset+=dCount;var rsp=[1];for(i=0;i<eCount;i++)rsp=polyMul(rsp,[1,gexp(i)]);ec[r]=polyMod(dc[r].concat(new Array(rsp.length-1).fill(0)),rsp);}
+  var data=[],idx=0;for(i=0;i<maxDc;i++)for(r=0;r<rsb.length;r++)if(i<dc[r].length)data[idx++]=dc[r][i];for(i=0;i<maxEc;i++)for(r=0;r<rsb.length;r++)if(i<ec[r].length)data[idx++]=ec[r][i];
+  function getMask(p,r,c){switch(p){case 0:return(r+c)%2===0;case 1:return r%2===0;case 2:return c%3===0;case 3:return(r+c)%3===0;case 4:return(Math.floor(r/2)+Math.floor(c/3))%2===0;case 5:return(r*c)%2+(r*c)%3===0;case 6:return((r*c)%2+(r*c)%3)%2===0;case 7:return((r*c)%3+(r+c)%2)%2===0;}}
+  function mapData(mask){var inc=-1,row=mc-1,bi=7,by=0;for(var col=mc-1;col>0;col-=2){if(col===6)col--;while(true){for(var cc=0;cc<2;cc++){if(mod[row][col-cc]===null){var dark=by<data.length&&((data[by]>>>bi)&1)===1;if(getMask(mask,row,col-cc))dark=!dark;mod[row][col-cc]=dark;bi--;if(bi===-1){by++;bi=7;}}}row+=inc;if(row<0||row>=mc){row-=inc;inc=-inc;break;}}}}
+  function getLost(m){var lp=0;for(var r=0;r<mc;r++)for(var c=0;c<mc;c++){var sc=0,dk=m[r][c];for(var rr=-1;rr<=1;rr++)for(var cc=-1;cc<=1;cc++){if(r+rr<0||r+rr>=mc||c+cc<0||c+cc>=mc||(!rr&&!cc))continue;if(dk===m[r+rr][c+cc])sc++;}if(sc>5)lp+=sc-2;}return lp;}
+  var bestMask=0,bestLost=Infinity;
+  for(var m=0;m<8;m++){
+    var savedMod=mod.map(function(row){return row.slice();});
+    setTI(true,m);mapData(m);var lp=getLost(mod);
+    if(lp<bestLost){bestLost=lp;bestMask=m;}
+    mod=savedMod;
+  }
+  setTI(false,bestMask);mapData(bestMask);
+  return mod;
+}
 
 // ── SETTINGS ──
-window.changePass = function(){
-  const o=document.getElementById('pass-old').value;
-  const n=document.getElementById('pass-new').value;
-  const n2=document.getElementById('pass-new2').value;
-  const m=document.getElementById('pass-msg');
+function changePass(){
+  var o=document.getElementById('pass-old').value;
+  var n=document.getElementById('pass-new').value;
+  var n2=document.getElementById('pass-new2').value;
+  var m=document.getElementById('pass-msg');
   if(o!==getPass()){m.className='msg-text err';m.textContent='รหัสผ่านปัจจุบันไม่ถูกต้อง';return;}
   if(n.length<6){m.className='msg-text err';m.textContent='รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัว';return;}
   if(n!==n2){m.className='msg-text err';m.textContent='รหัสผ่านใหม่ไม่ตรงกัน';return;}
-  setPass(n);
-  m.className='msg-text ok';m.textContent='✅ เปลี่ยนรหัสผ่านสำเร็จ';
-  ['pass-old','pass-new','pass-new2'].forEach(id=>document.getElementById(id).value='');
-};
+  setPass(n);m.className='msg-text ok';m.textContent='✅ เปลี่ยนรหัสผ่านสำเร็จ';
+  ['pass-old','pass-new','pass-new2'].forEach(function(id){document.getElementById(id).value='';});
+}
+
+// ── EXPOSE TO HTML ──
+window.doLogin = doLogin;
+window.doLogout = doLogout;
+window.showTab = showTab;
+window.showRoom = showRoom;
+window.prefillAndClose = prefillAndClose;
+window.closeModal = closeModal;
+window.addBooking = addBooking;
+window.clearForm = clearForm;
+window.askDelete = askDelete;
+window.confirmDelete = confirmDelete;
+window.shareBooking = shareBooking;
+window.showShareAll = showShareAll;
+window.copyText = copyText;
+window.lineShare = lineShare;
+window.changePass = changePass;
+window.showQRModal = showQRModal;
+window.renderQR = renderQR;
+window.dlQR = dlQR;
+window.loadBookings = loadBookings;
 </script>
 </body>
 </html>
