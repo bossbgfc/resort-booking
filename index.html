@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f0f">
+<title>รีสอร์ท — ระบบจองห้องพัก</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;
+  --border:#2e2e2e;--border2:#3a3a3a;
+  --text:#f0ede8;--text2:#9a9590;--text3:#5c5854;
+  --green:#4ade80;--green-bg:rgba(74,222,128,0.08);
+  --red:#f87171;--red-bg:rgba(248,113,113,0.08);
+  --accent:#c9a96e;--accent-bg:rgba(201,169,110,0.1);
+  --r:10px;--r2:14px;--font:'Sarabun',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.5;overflow-x:hidden}
+
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.login-card{width:100%;max-width:340px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:36px 28px}
+.login-logo{text-align:center;margin-bottom:28px}
+.login-logo .icon{font-size:44px;display:block;margin-bottom:10px}
+.login-logo h1{font-size:20px;font-weight:600;color:var(--accent)}
+.login-logo p{font-size:13px;color:var(--text2);margin-top:4px}
+
+label{display:block;font-size:12px;color:var(--text2);margin-bottom:6px;letter-spacing:0.04em;text-transform:uppercase}
+input,select{width:100%;padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:15px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;appearance:none}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239a9590' d='M6 8L1 3h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px}
+input:focus,select:focus{border-color:var(--accent)}
+input::placeholder{color:var(--text3)}
+.form-row{margin-bottom:14px}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:11px 20px;border-radius:var(--r);border:1px solid var(--border2);background:transparent;color:var(--text);font-family:var(--font);font-size:14px;cursor:pointer;transition:all 0.15s;white-space:nowrap;-webkit-appearance:none}
+.btn:active{transform:scale(0.97)}
+.btn-primary{background:var(--accent);color:#0f0f0f;border-color:var(--accent);font-weight:600}
+.btn-danger{color:var(--red);border-color:rgba(248,113,113,0.3)}
+.btn-share{background:var(--green-bg);color:var(--green);border-color:rgba(74,222,128,0.3)}
+.btn-full{width:100%}
+.btn:disabled{opacity:0.4;cursor:not-allowed}
+.btn-sm{padding:7px 13px;font-size:13px}
+
+#app{display:none;min-height:100vh;padding-bottom:80px}
+#app.visible{display:block}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(15,15,15,0.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.topbar h1{font-size:16px;font-weight:600;color:var(--accent)}
+.topbar-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.role-pill{font-size:11px;padding:3px 10px;border-radius:20px;background:var(--accent-bg);color:var(--accent);border:1px solid rgba(201,169,110,0.2);white-space:nowrap}
+.logout-btn{font-size:13px;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text2);cursor:pointer;white-space:nowrap}
+.sync-status{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0}
+.sync-dot.syncing{background:var(--accent);animation:pulse 1s infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(26,26,26,0.95);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;padding:8px 0 max(8px,env(safe-area-inset-bottom))}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;cursor:pointer;border:none;background:transparent;color:var(--text3);font-family:var(--font);font-size:10px;transition:color 0.15s}
+.nav-item.active{color:var(--accent)}
+.nav-icon{font-size:20px;line-height:1}
+
+.content{padding:16px;max-width:700px;margin:0 auto}
+.section{display:none}.section.active{display:block}
+.section-title{font-size:17px;font-weight:600;margin-bottom:18px}
+
+.summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;text-align:center}
+.sc-num{font-size:26px;font-weight:600}
+.sc-label{font-size:11px;color:var(--text2);margin-top:2px}
+
+.date-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.date-bar label{margin:0;text-transform:none;font-size:13px;color:var(--text2);flex-shrink:0}
+.date-bar input[type="date"]{flex:1;min-width:140px;padding:8px 12px;font-size:14px}
+
+.cat-label{font-size:11px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:6px}
+.cat-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:4px}
+.room-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden}
+.room-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.room-card.available::before{background:var(--green)}
+.room-card.booked::before{background:var(--red)}
+.room-card.booked{background:rgba(248,113,113,0.04)}
+.room-card:active{transform:scale(0.97)}
+.room-name{font-size:13px;font-weight:500;margin-bottom:6px}
+.room-status{font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block}
+.room-status.available{background:var(--green-bg);color:var(--green)}
+.room-status.booked{background:var(--red-bg);color:var(--red)}
+.room-guest{font-size:11px;color:var(--text2);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:flex-end;justify-content:center}
+.modal-overlay.open{display:flex}
+@media(min-width:480px){
+  .modal-overlay{align-items:center;padding:24px}
+  .modal{border-radius:var(--r2)!important;max-width:440px!important}
+}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2) var(--r2) 0 0;padding:20px;width:100%;max-height:85vh;overflow-y:auto;padding-bottom:max(20px,env(safe-area-inset-bottom))}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal h3{font-size:16px;font-weight:600;margin-bottom:14px}
+.modal-info-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:14px}
+.modal-info-row{font-size:14px;margin-bottom:6px;display:flex;align-items:flex-start;gap:8px}
+.modal-info-row:last-child{margin-bottom:0}
+.modal-info-label{color:var(--text2);font-size:12px;min-width:64px;margin-top:1px;flex-shrink:0}
+.modal-btn-row{display:flex;gap:8px;flex-wrap:wrap}
+
+.search-input{width:100%;padding:11px 14px 11px 38px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:15px;outline:none;margin-bottom:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%235c5854' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:12px center}
+.booking-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.bi-name{font-size:15px;font-weight:600;margin-bottom:4px}
+.bi-info{font-size:12px;color:var(--text2);margin-bottom:2px}
+
+.settings-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:12px}
+.settings-card h3{font-size:14px;font-weight:600;color:var(--accent);margin-bottom:14px}
+
+.share-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:14px;font-size:13px;line-height:1.8;white-space:pre-wrap;word-break:break-word;margin-bottom:14px;max-height:300px;overflow-y:auto;color:var(--text2)}
+
+.msg-text{font-size:13px;margin-top:10px;min-height:20px}
+.empty-state{text-align:center;padding:48px 24px;color:var(--text2)}
+.empty-icon{font-size:40px;display:block;margin-bottom:10px}
+.err{color:var(--red)!important}
+.ok{color:var(--green)!important}
+.loading-state{text-align:center;padding:48px 24px;color:var(--text2);font-size:14px}
+
+@media(min-width:600px){
+  .content{padding:20px 24px}
+  .room-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+}
+</style>
+</head>
+<body>
+
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <span class="icon">🏕</span>
+      <h1>รีสอร์ท</h1>
+      <p>ระบบจัดการห้องพัก</p>
+    </div>
+    <div class="form-row">
+      <label>รหัสผ่าน</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="doLogin()">เข้าสู่ระบบ</button>
+    <div class="msg-text err" id="login-err" style="text-align:center"></div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <h1>🏕 รีสอร์ท</h1>
+    <div class="topbar-right">
+      <div class="sync-status"><div class="sync-dot" id="sync-dot"></div><span id="sync-txt"></span></div>
+      <span class="role-pill" id="role-pill"></span>
+      <button class="logout-btn" onclick="doLogout()">ออก</button>
+    </div>
+  </div>
+
+  <div class="section active content" id="section-overview">
+    <div class="date-bar">
+      <label>📅</label>
+      <input type="date" id="view-date" onchange="renderRooms()">
+      <button class="btn btn-sm" onclick="loadBookings()">🔄</button>
+    </div>
+    <div class="summary-bar">
+      <div class="summary-card"><div class="sc-num" id="sum-booked" style="color:var(--red)">0</div><div class="sc-label">จองแล้ว</div></div>
+      <div class="summary-card"><div class="sc-num" id="sum-free" style="color:var(--green)">0</div><div class="sc-label">ว่าง</div></div>
+      <div class="summary-card"><div class="sc-num" style="color:var(--accent)">29</div><div class="sc-label">ทั้งหมด</div></div>
+    </div>
+    <div id="rooms-container"><div class="loading-state">⏳ กำลังโหลด...</div></div>
+  </div>
+
+  <div class="section content" id="section-booking">
+    <div class="section-title">➕ เพิ่มการจอง</div>
+    <div class="form-row"><label>ชื่อผู้จอง *</label><input type="text" id="b-name" placeholder="ชื่อ-นามสกุล" autocomplete="off"></div>
+    <div class="form-row"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="b-phone" placeholder="0812345678" inputmode="tel"></div>
+    <div class="form-row"><label>ห้อง / เต้นท์ *</label>
+      <select id="b-room">
+        <option value="">-- เลือกห้องหรือเต้นท์ --</option>
+        <optgroup label="🏠 ห้องใหญ่"><option>ห้องใหญ่ 1</option><option>ห้องใหญ่ 2</option><option>ห้องใหญ่ 3</option></optgroup>
+        <optgroup label="🛏 ห้องกลาง"><option>ห้องกลาง 1</option><option>ห้องกลาง 2</option><option>ห้องกลาง 3</option><option>ห้องกลาง 4</option><option>ห้องกลาง 5</option><option>ห้องกลาง 6</option></optgroup>
+        <optgroup label="🛖 ห้องเล็ก"><option>ห้องเล็ก 1</option><option>ห้องเล็ก 2</option><option>ห้องเล็ก 3</option><option>ห้องเล็ก 4</option><option>ห้องเล็ก 5</option><option>ห้องเล็ก 6</option></optgroup>
+        <optgroup label="⛺ เต้นท์ใหญ่"><option>เต้นท์ใหญ่ 1</option><option>เต้นท์ใหญ่ 2</option><option>เต้นท์ใหญ่ 3</option><option>เต้นท์ใหญ่ 4</option></optgroup>
+        <optgroup label="🏕 เต้นท์เล็ก"><option>เต้นท์เล็ก 1</option><option>เต้นท์เล็ก 2</option><option>เต้นท์เล็ก 3</option><option>เต้นท์เล็ก 4</option><option>เต้นท์เล็ก 5</option><option>เต้นท์เล็ก 6</option><option>เต้นท์เล็ก 7</option><option>เต้นท์เล็ก 8</option><option>เต้นท์เล็ก 9</option><option>เต้นท์เล็ก 10</option></optgroup>
+      </select>
+    </div>
+    <div class="form-grid">
+      <div><label>วันเช็คอิน *</label><input type="date" id="b-checkin"></div>
+      <div><label>วันเช็คเอาท์ *</label><input type="date" id="b-checkout"></div>
+    </div>
+    <div class="form-row"><label>หมายเหตุ</label><input type="text" id="b-note" placeholder="เช่น ต้องการที่จอดรถ" autocomplete="off"></div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="save-btn" onclick="addBooking()">✓ บันทึกการจอง</button>
+      <button class="btn" onclick="clearForm()">ล้างข้อมูล</button>
+    </div>
+    <div class="msg-text" id="booking-msg"></div>
+  </div>
+
+  <div class="section content" id="section-list">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+      <div class="section-title" style="margin:0">📃 รายการจอง</div>
+      <button class="btn btn-share btn-sm" onclick="showShareAll()">📤 ส่งสรุป</button>
+    </div>
+    <input type="search" class="search-input" id="search-q" placeholder="ค้นหาชื่อ, เบอร์, ห้อง..." oninput="renderList()" autocomplete="off">
+    <div id="booking-list-container"></div>
+  </div>
+
+  <div class="section content" id="section-settings">
+    <div class="section-title">⚙️ ตั้งค่า</div>
+    <div class="settings-card">
+      <h3>🔑 เปลี่ยนรหัสผ่าน</h3>
+      <div class="form-row"><label>รหัสผ่านปัจจุบัน</label><input type="password" id="pass-old" placeholder="••••••••"></div>
+      <div class="form-row"><label>รหัสผ่านใหม่ (อย่างน้อย 6 ตัว)</label><input type="password" id="pass-new" placeholder="••••••••"></div>
+      <div class="form-row"><label>ยืนยันรหัสผ่านใหม่</label><input type="password" id="pass-new2" placeholder="••••••••"></div>
+      <button class="btn btn-primary btn-sm" onclick="changePass()">บันทึก</button>
+      <div class="msg-text" id="pass-msg"></div>
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-overview" onclick="showTab('overview','nav-overview')"><span class="nav-icon">📋</span>ภาพรวม</button>
+    <button class="nav-item" id="nav-booking" onclick="showTab('booking','nav-booking')"><span class="nav-icon">➕</span>จองห้อง</button>
+    <button class="nav-item" id="nav-list" onclick="showTab('list','nav-list')"><span class="nav-icon">📃</span>รายการ</button>
+    <button class="nav-item" id="nav-settings" onclick="showTab('settings','nav-settings')"><span class="nav-icon">⚙️</span>ตั้งค่า</button>
+  </nav>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, remove, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBXbakj53tXoXzsm6d1zQC7Um6m0i4hyiA",
+  authDomain: "resort-booking-8323a.firebaseapp.com",
+  databaseURL: "https://resort-booking-8323a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "resort-booking-8323a",
+  storageBucket: "resort-booking-8323a.firebasestorage.app",
+  messagingSenderId: "122161653551",
+  appId: "1:122161653551:web:871ec38407a74a6c3163da"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const bookingsRef = ref(db, 'bookings');
+
+const TODAY = new Date().toISOString().split('T')[0];
+const ROOMS = [
+  {name:'ห้องใหญ่ 1',type:'ห้องใหญ่'},{name:'ห้องใหญ่ 2',type:'ห้องใหญ่'},{name:'ห้องใหญ่ 3',type:'ห้องใหญ่'},
+  {name:'ห้องกลาง 1',type:'ห้องกลาง'},{name:'ห้องกลาง 2',type:'ห้องกลาง'},{name:'ห้องกลาง 3',type:'ห้องกลาง'},
+  {name:'ห้องกลาง 4',type:'ห้องกลาง'},{name:'ห้องกลาง 5',type:'ห้องกลาง'},{name:'ห้องกลาง 6',type:'ห้องกลาง'},
+  {name:'ห้องเล็ก 1',type:'ห้องเล็ก'},{name:'ห้องเล็ก 2',type:'ห้องเล็ก'},{name:'ห้องเล็ก 3',type:'ห้องเล็ก'},
+  {name:'ห้องเล็ก 4',type:'ห้องเล็ก'},{name:'ห้องเล็ก 5',type:'ห้องเล็ก'},{name:'ห้องเล็ก 6',type:'ห้องเล็ก'},
+  {name:'เต้นท์ใหญ่ 1',type:'เต้นท์ใหญ่'},{name:'เต้นท์ใหญ่ 2',type:'เต้นท์ใหญ่'},{name:'เต้นท์ใหญ่ 3',type:'เต้นท์ใหญ่'},{name:'เต้นท์ใหญ่ 4',type:'เต้นท์ใหญ่'},
+  {name:'เต้นท์เล็ก 1',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 2',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 3',type:'เต้นท์เล็ก'},
+  {name:'เต้นท์เล็ก 4',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 5',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 6',type:'เต้นท์เล็ก'},
+  {name:'เต้นท์เล็ก 7',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 8',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 9',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 10',type:'เต้นท์เล็ก'}
+];
+const ICONS = {'ห้องใหญ่':'🏠','ห้องกลาง':'🛏','ห้องเล็ก':'🛖','เต้นท์ใหญ่':'⛺','เต้นท์เล็ก':'🏕'};
+const DEFAULT_PASS = 'resort1234';
+
+function getPass(){return localStorage.getItem('resort_pass')||DEFAULT_PASS;}
+function setPass(p){localStorage.setItem('resort_pass',p);}
+
+let bookings = [];
+let currentRole = null;
+let dbListener = null;
+
+// ── SYNC STATUS ──
+function setSyncStatus(state){
+  const dot = document.getElementById('sync-dot');
+  const txt = document.getElementById('sync-txt');
+  if(state==='ok'){dot.className='sync-dot';txt.textContent='ซิงค์แล้ว';}
+  else if(state==='syncing'){dot.className='sync-dot syncing';txt.textContent='กำลังซิงค์...';}
+  else{dot.className='sync-dot error';txt.textContent='ออฟไลน์';}
+}
+
+// ── AUTH ──
+document.getElementById('login-pass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+window.doLogin = function(){
+  const p=document.getElementById('login-pass').value;
+  if(p===getPass()){currentRole='owner';startApp();}
+  else{document.getElementById('login-err').textContent='รหัสผ่านไม่ถูกต้อง';document.getElementById('login-pass').value='';}
+};
+function startApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').classList.add('visible');
+  document.getElementById('role-pill').textContent='👑 เจ้าของ';
+  document.getElementById('view-date').value=TODAY;
+  document.getElementById('b-checkin').value=TODAY;
+  const d=new Date();d.setDate(d.getDate()+1);
+  document.getElementById('b-checkout').value=d.toISOString().split('T')[0];
+  loadBookings();
+}
+window.doLogout = function(){
+  if(dbListener){off(bookingsRef);dbListener=null;}
+  currentRole=null;bookings=[];
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').classList.remove('visible');
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-err').textContent='';
+};
+
+// ── FIREBASE REALTIME ──
+window.loadBookings = function(){
+  setSyncStatus('syncing');
+  if(dbListener) off(bookingsRef);
+  dbListener = onValue(bookingsRef, (snapshot)=>{
+    bookings=[];
+    const data=snapshot.val();
+    if(data){
+      Object.entries(data).forEach(([key,val])=>{
+        bookings.push({...val, firebaseKey:key});
+      });
+    }
+    bookings.sort((a,b)=>a.checkin>b.checkin?1:-1);
+    setSyncStatus('ok');
+    renderRooms();
+    if(document.getElementById('section-list').classList.contains('active'))renderList();
+    setTimeout(()=>{ document.getElementById('sync-txt').textContent=''; },3000);
+  }, (err)=>{
+    console.error(err);
+    setSyncStatus('error');
+  });
+};
+
+// ── TABS ──
+window.showTab = function(t,navId){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('section-'+t).classList.add('active');
+  document.getElementById(navId).classList.add('active');
+  if(t==='list')renderList();
+  if(t==='overview')renderRooms();
+  window.scrollTo({top:0,behavior:'smooth'});
+};
+
+// ── ROOMS ──
+function isBooked(roomName,date){
+  return bookings.find(b=>b.room===roomName&&b.checkin<=date&&b.checkout>date);
+}
+function renderRooms(){
+  const date=document.getElementById('view-date')?.value||TODAY;
+  const c=document.getElementById('rooms-container');
+  if(!c)return;
+  const cats=['ห้องใหญ่','ห้องกลาง','ห้องเล็ก','เต้นท์ใหญ่','เต้นท์เล็ก'];
+  let booked=0,html='';
+  cats.forEach(cat=>{
+    const rooms=ROOMS.filter(r=>r.type===cat);
+    html+=`<div class="cat-label">${ICONS[cat]} ${cat}</div><div class="room-grid">`;
+    rooms.forEach(r=>{
+      const b=isBooked(r.name,date);
+      if(b)booked++;
+      html+=`<div class="room-card ${b?'booked':'available'}" onclick="showRoom('${r.name}','${date}')">
+        <div class="room-name">${r.name}</div>
+        <span class="room-status ${b?'booked':'available'}">${b?'จองแล้ว':'ว่าง'}</span>
+        ${b?`<div class="room-guest">${b.name}</div>`:''}
+      </div>`;
+    });
+    html+='</div>';
+  });
+  c.innerHTML=html;
+  document.getElementById('sum-booked').textContent=booked;
+  document.getElementById('sum-free').textContent=ROOMS.length-booked;
+}
+
+// ── MODAL ──
+window.showRoom = function(roomName,date){
+  const b=isBooked(roomName,date);
+  const modal=document.getElementById('modal-content');
+  if(b){
+    modal.innerHTML=`
+      <div class="modal-handle"></div>
+      <h3>🚪 ${roomName}</h3>
+      <div class="modal-info-box">
+        <div class="modal-info-row"><span class="modal-info-label">ผู้จอง</span><strong>${b.name}</strong></div>
+        <div class="modal-info-row"><span class="modal-info-label">เบอร์</span>${b.phone}</div>
+        <div class="modal-info-row"><span class="modal-info-label">เช็คอิน</span>${b.checkin}</div>
+        <div class="modal-info-row"><span class="modal-info-label">เช็คเอาท์</span>${b.checkout}</div>
+        ${b.note?`<div class="modal-info-row"><span class="modal-info-label">หมายเหตุ</span>${b.note}</div>`:''}
+      </div>
+      <div class="modal-btn-row">
+        <button class="btn btn-share btn-sm" onclick="shareBooking('${b.firebaseKey}')">📤 ส่งให้คนอื่น</button>
+        <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,"\\'")}','${b.room}','${b.checkin}','${b.checkout}')">🗑 ยกเลิก</button>
+        <button class="btn btn-sm" onclick="closeModal()">ปิด</button>
+      </div>`;
+  }else{
+    modal.innerHTML=`
+      <div class="modal-handle"></div>
+      <h3>🚪 ${roomName}</h3>
+      <div style="text-align:center;padding:20px 0 10px;color:var(--green)">✅ ห้องว่าง — ${date}</div>
+      <div class="modal-btn-row">
+        <button class="btn btn-primary" onclick="prefillAndClose('${roomName}')">+ จองห้องนี้</button>
+        <button class="btn" onclick="closeModal()">ปิด</button>
+      </div>`;
+  }
+  document.getElementById('modal-overlay').classList.add('open');
+};
+window.prefillAndClose = function(roomName){
+  document.getElementById('b-room').value=roomName;
+  closeModal();
+  showTab('booking','nav-booking');
+};
+window.closeModal = function(){document.getElementById('modal-overlay').classList.remove('open');};
+
+// ── DELETE ──
+window.askDelete = function(firebaseKey,name,room,checkin,checkout){
+  const modal=document.getElementById('modal-content');
+  modal.innerHTML=`
+    <div class="modal-handle"></div>
+    <h3>🗑 ยืนยันการยกเลิก</h3>
+    <div class="modal-info-box" style="margin-bottom:14px">
+      <div class="modal-info-row"><span class="modal-info-label">ผู้จอง</span><strong>${name}</strong></div>
+      <div class="modal-info-row"><span class="modal-info-label">ห้อง</span>${room}</div>
+      <div class="modal-info-row"><span class="modal-info-label">วันที่</span>${checkin} → ${checkout}</div>
+    </div>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:14px">ต้องการยกเลิกการจองนี้ใช่ไหม?</p>
+    <div class="modal-btn-row">
+      <button class="btn btn-danger" onclick="confirmDelete('${firebaseKey}')">🗑 ยืนยันยกเลิก</button>
+      <button class="btn" onclick="closeModal()">ไม่ยกเลิก</button>
+    </div>`;
+  document.getElementById('modal-overlay').classList.add('open');
+};
+window.confirmDelete = async function(firebaseKey){
+  try{
+    await remove(ref(db,'bookings/'+firebaseKey));
+    closeModal();
+  }catch(e){
+    alert('ลบไม่สำเร็จ: '+e.message);
+  }
+};
+
+// ── ADD BOOKING ──
+window.addBooking = async function(){
+  const name=document.getElementById('b-name').value.trim();
+  const phone=document.getElementById('b-phone').value.trim();
+  const room=document.getElementById('b-room').value;
+  const checkin=document.getElementById('b-checkin').value;
+  const checkout=document.getElementById('b-checkout').value;
+  const note=document.getElementById('b-note').value.trim();
+  const msg=document.getElementById('booking-msg');
+  msg.className='msg-text';msg.textContent='';
+  if(!name||!phone||!room||!checkin||!checkout){msg.className='msg-text err';msg.textContent='⚠ กรุณากรอกข้อมูลให้ครบถ้วน';return;}
+  if(checkin>=checkout){msg.className='msg-text err';msg.textContent='⚠ วันเช็คเอาท์ต้องหลังวันเช็คอิน';return;}
+  const conflict=bookings.find(b=>b.room===room&&b.checkin<checkout&&b.checkout>checkin);
+  if(conflict){msg.className='msg-text err';msg.textContent=`⚠ ห้องนี้มีการจองซ้อนกัน (${conflict.name})`;return;}
+  const btn=document.getElementById('save-btn');
+  btn.disabled=true;btn.textContent='⏳ กำลังบันทึก...';
+  try{
+    await push(bookingsRef,{name,phone,room,checkin,checkout,note,created:new Date().toISOString()});
+    msg.className='msg-text ok';msg.textContent=`✅ บันทึกสำเร็จ — ${name} | ${room}`;
+    clearForm();
+  }catch(e){
+    msg.className='msg-text err';msg.textContent='⚠ บันทึกไม่สำเร็จ: '+e.message;
+  }
+  btn.disabled=false;btn.textContent='✓ บันทึกการจอง';
+};
+window.clearForm = function(){
+  ['b-name','b-phone','b-note'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('b-room').value='';
+  document.getElementById('b-checkin').value=TODAY;
+  const d=new Date();d.setDate(d.getDate()+1);
+  document.getElementById('b-checkout').value=d.toISOString().split('T')[0];
+};
+
+// ── LIST ──
+function renderList(){
+  const q=(document.getElementById('search-q')?.value||'').toLowerCase();
+  const c=document.getElementById('booking-list-container');
+  if(!c)return;
+  let list=bookings.filter(b=>!q||b.name?.toLowerCase().includes(q)||b.phone?.includes(q)||b.room?.toLowerCase().includes(q));
+  if(!list.length){c.innerHTML='<div class="empty-state"><span class="empty-icon">📭</span>ไม่มีข้อมูลการจอง</div>';return;}
+  c.innerHTML=list.map(b=>`
+    <div class="booking-item">
+      <div style="min-width:0">
+        <div class="bi-name">${b.name}</div>
+        <div class="bi-info">📞 ${b.phone}</div>
+        <div class="bi-info">🚪 ${b.room}</div>
+        <div class="bi-info">📅 ${b.checkin} → ${b.checkout}</div>
+        ${b.note?`<div class="bi-info">📝 ${b.note}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;flex-shrink:0">
+        <button class="btn btn-share btn-sm" onclick="shareBooking('${b.firebaseKey}')">📤</button>
+        <button class="btn btn-danger btn-sm" onclick="askDelete('${b.firebaseKey}','${b.name.replace(/'/g,"\\'")}','${b.room}','${b.checkin}','${b.checkout}')">🗑</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── SHARE ──
+window.shareBooking = function(firebaseKey){
+  const b=bookings.find(x=>x.firebaseKey===firebaseKey);
+  if(!b)return;
+  const text=buildShareText(b);
+  showShareModal(text,'📤 ส่งรายละเอียดการจอง');
+};
+window.showShareAll = function(){
+  if(!bookings.length){alert('ยังไม่มีข้อมูลการจอง');return;}
+  let text=`🏕 รีสอร์ท — สรุปการจองทั้งหมด (${bookings.length} รายการ)\n${'━'.repeat(24)}\n`;
+  bookings.forEach((b,i)=>{
+    text+=`${i+1}. ${b.name} | ${b.room}\n   📞 ${b.phone} | 📅 ${b.checkin} → ${b.checkout}${b.note?`\n   📝 ${b.note}`:''}\n\n`;
+  });
+  showShareModal(text,'📤 ส่งสรุปการจองทั้งหมด');
+};
+function buildShareText(b){
+  return `🏕 รีสอร์ท — ยืนยันการจอง\n${'━'.repeat(20)}\n👤 ชื่อ: ${b.name}\n📞 เบอร์: ${b.phone}\n🚪 ห้อง: ${b.room}\n📅 เช็คอิน: ${b.checkin}\n📅 เช็คเอาท์: ${b.checkout}${b.note?`\n📝 หมายเหตุ: ${b.note}`:''}\n${'━'.repeat(20)}\nขอบคุณที่ใช้บริการครับ/ค่ะ`;
+}
+function showShareModal(text,title){
+  const modal=document.getElementById('modal-content');
+  const escaped=text.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  modal.innerHTML=`
+    <div class="modal-handle"></div>
+    <h3>${title}</h3>
+    <div class="share-box">${escaped}</div>
+    <div class="modal-btn-row">
+      <button class="btn btn-primary" onclick="copyText()">📋 คัดลอก</button>
+      <button class="btn btn-share" onclick="lineShare()">💬 ส่ง Line</button>
+      <button class="btn btn-sm" onclick="closeModal()">ปิด</button>
+    </div>
+    <div class="msg-text ok" id="copy-msg" style="text-align:center"></div>`;
+  window._shareText=text;
+  document.getElementById('modal-overlay').classList.add('open');
+}
+window.copyText = function(){
+  navigator.clipboard.writeText(window._shareText||'').then(()=>{
+    document.getElementById('copy-msg').textContent='✅ คัดลอกแล้ว!';
+  }).catch(()=>{
+    const ta=document.createElement('textarea');ta.value=window._shareText||'';
+    document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);
+    document.getElementById('copy-msg').textContent='✅ คัดลอกแล้ว!';
+  });
+};
+window.lineShare = function(){
+  window.open('https://line.me/R/msg/text/?'+encodeURIComponent(window._shareText||''),'_blank');
+};
+
+// ── SETTINGS ──
+window.changePass = function(){
+  const o=document.getElementById('pass-old').value;
+  const n=document.getElementById('pass-new').value;
+  const n2=document.getElementById('pass-new2').value;
+  const m=document.getElementById('pass-msg');
+  if(o!==getPass()){m.className='msg-text err';m.textContent='รหัสผ่านปัจจุบันไม่ถูกต้อง';return;}
+  if(n.length<6){m.className='msg-text err';m.textContent='รหัสผ่านใหม่ต้องมีอย่างน้อย 6 ตัว';return;}
+  if(n!==n2){m.className='msg-text err';m.textContent='รหัสผ่านใหม่ไม่ตรงกัน';return;}
+  setPass(n);
+  m.className='msg-text ok';m.textContent='✅ เปลี่ยนรหัสผ่านสำเร็จ';
+  ['pass-old','pass-new','pass-new2'].forEach(id=>document.getElementById(id).value='');
+};
+</script>
+</body>
+</html>
