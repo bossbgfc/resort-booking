@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f0f">
+<title>ตารางจองห้องพัก — รีสอร์ท</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0f0f0f;--bg2:#1a1a1a;--bg3:#242424;
+  --border:#2e2e2e;--text:#f0ede8;--text2:#9a9590;--text3:#5c5854;
+  --green:#4ade80;--green-bg:rgba(74,222,128,0.08);
+  --red:#f87171;--red-bg:rgba(248,113,113,0.08);
+  --accent:#c9a96e;--r:10px;--r2:14px;--font:'Sarabun',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font);background:var(--bg);color:var(--text);font-size:15px;line-height:1.5}
+
+.topbar{background:rgba(15,15,15,0.95);border-bottom:1px solid var(--border);padding:14px 16px;text-align:center;position:sticky;top:0;z-index:50}
+.topbar h1{font-size:18px;font-weight:600;color:var(--accent)}
+.topbar p{font-size:12px;color:var(--text3);margin-top:2px}
+
+.content{padding:16px;max-width:700px;margin:0 auto}
+
+/* SUMMARY */
+.summary-bar{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;margin-top:16px}
+.summary-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;text-align:center}
+.sc-num{font-size:26px;font-weight:600}
+.sc-label{font-size:11px;color:var(--text2);margin-top:2px}
+
+/* DATE FILTER */
+.filter-bar{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.filter-bar label{font-size:13px;color:var(--text2);flex-shrink:0}
+.filter-bar input{flex:1;min-width:140px;padding:8px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:14px;outline:none}
+.filter-bar input:focus{border-color:var(--accent)}
+.search-input{width:100%;padding:10px 14px 10px 36px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--font);font-size:14px;outline:none;margin-bottom:14px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%235c5854' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:11px center}
+
+/* TABS */
+.tabs{display:flex;gap:0;margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:4px;overflow-x:auto}
+.tab-btn{flex:1;padding:8px 12px;border:none;background:transparent;color:var(--text2);font-family:var(--font);font-size:13px;cursor:pointer;border-radius:7px;white-space:nowrap;transition:all 0.15s}
+.tab-btn.active{background:var(--bg3);color:var(--text);font-weight:500}
+
+/* ROOM GRID */
+.room-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:4px}
+.room-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:12px;position:relative;overflow:hidden}
+.room-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px}
+.room-card.available::before{background:var(--green)}
+.room-card.booked::before{background:var(--red)}
+.room-card.booked{background:rgba(248,113,113,0.04)}
+.room-name{font-size:13px;font-weight:500;margin-bottom:6px}
+.room-status{font-size:11px;padding:2px 8px;border-radius:20px;display:inline-block}
+.room-status.available{background:var(--green-bg);color:var(--green)}
+.room-status.booked{background:var(--red-bg);color:var(--red)}
+.room-guest{font-size:11px;color:var(--text2);margin-top:5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.room-dates{font-size:10px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cat-label{font-size:11px;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:6px}
+.cat-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+/* BOOKING LIST */
+.booking-item{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px}
+.bi-name{font-size:15px;font-weight:600;margin-bottom:4px}
+.bi-info{font-size:12px;color:var(--text2);margin-bottom:2px;display:flex;align-items:center;gap:5px}
+.bi-room-badge{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);display:inline-block;margin-top:4px}
+
+/* SYNC */
+.sync-bar{text-align:center;padding:8px;font-size:12px;color:var(--text3);display:flex;align-items:center;justify-content:center;gap:6px}
+.sync-dot{width:6px;height:6px;border-radius:50%;background:var(--green)}
+.sync-dot.loading{background:var(--accent);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
+
+.empty-state{text-align:center;padding:48px 24px;color:var(--text2);font-size:14px}
+.loading-state{text-align:center;padding:48px 24px;color:var(--text2);font-size:14px}
+
+@media(min-width:600px){
+  .content{padding:20px 24px}
+  .room-grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>🏕 ตารางจองห้องพัก</h1>
+  <p>ดูข้อมูลการจองทั้งหมด</p>
+</div>
+
+<div class="content">
+  <div class="sync-bar">
+    <div class="sync-dot loading" id="sync-dot"></div>
+    <span id="sync-txt">กำลังโหลดข้อมูล...</span>
+  </div>
+
+  <div class="summary-bar">
+    <div class="summary-card"><div class="sc-num" id="sum-booked" style="color:var(--red)">—</div><div class="sc-label">จองแล้ววันนี้</div></div>
+    <div class="summary-card"><div class="sc-num" id="sum-free" style="color:var(--green)">—</div><div class="sc-label">ว่างวันนี้</div></div>
+    <div class="summary-card"><div class="sc-num" id="sum-all" style="color:var(--accent)">—</div><div class="sc-label">การจองทั้งหมด</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tab-grid" onclick="switchTab('grid')">📋 ภาพรวมห้อง</button>
+    <button class="tab-btn" id="tab-list" onclick="switchTab('list')">📃 รายการจอง</button>
+  </div>
+
+  <!-- GRID VIEW -->
+  <div id="view-grid">
+    <div class="filter-bar">
+      <label>📅 ดูวันที่</label>
+      <input type="date" id="view-date" onchange="renderGrid()">
+    </div>
+    <div id="grid-container"><div class="loading-state">⏳ กำลังโหลด...</div></div>
+  </div>
+
+  <!-- LIST VIEW -->
+  <div id="view-list" style="display:none">
+    <input type="search" class="search-input" id="search-q" placeholder="ค้นหาชื่อ, เบอร์, ห้อง..." oninput="renderList()" autocomplete="off">
+    <div id="list-container"><div class="loading-state">⏳ กำลังโหลด...</div></div>
+  </div>
+</div>
+
+<script type="importmap">
+{
+  "imports": {
+    "firebase/app": "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js",
+    "firebase/database": "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js"
+  }
+}
+</script>
+<script type="module">
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
+
+const FB_CONFIG = {
+  apiKey:"AIzaSyBXbakj53tXoXzsm6d1zQC7Um6m0i4hyiA",
+  authDomain:"resort-booking-8323a.firebaseapp.com",
+  databaseURL:"https://resort-booking-8323a-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId:"resort-booking-8323a",
+  storageBucket:"resort-booking-8323a.firebasestorage.app",
+  messagingSenderId:"122161653551",
+  appId:"1:122161653551:web:871ec38407a74a6c3163da"
+};
+
+const app = initializeApp(FB_CONFIG);
+const db = getDatabase(app);
+const bookingsRef = ref(db, 'bookings');
+
+const TODAY = new Date().toISOString().split('T')[0];
+const ROOMS = [
+  {name:'ห้องใหญ่ 1',type:'ห้องใหญ่'},{name:'ห้องใหญ่ 2',type:'ห้องใหญ่'},{name:'ห้องใหญ่ 3',type:'ห้องใหญ่'},
+  {name:'ห้องกลาง 1',type:'ห้องกลาง'},{name:'ห้องกลาง 2',type:'ห้องกลาง'},{name:'ห้องกลาง 3',type:'ห้องกลาง'},
+  {name:'ห้องกลาง 4',type:'ห้องกลาง'},{name:'ห้องกลาง 5',type:'ห้องกลาง'},{name:'ห้องกลาง 6',type:'ห้องกลาง'},
+  {name:'ห้องเล็ก 1',type:'ห้องเล็ก'},{name:'ห้องเล็ก 2',type:'ห้องเล็ก'},{name:'ห้องเล็ก 3',type:'ห้องเล็ก'},
+  {name:'ห้องเล็ก 4',type:'ห้องเล็ก'},{name:'ห้องเล็ก 5',type:'ห้องเล็ก'},{name:'ห้องเล็ก 6',type:'ห้องเล็ก'},
+  {name:'เต้นท์ใหญ่ 1',type:'เต้นท์ใหญ่'},{name:'เต้นท์ใหญ่ 2',type:'เต้นท์ใหญ่'},{name:'เต้นท์ใหญ่ 3',type:'เต้นท์ใหญ่'},{name:'เต้นท์ใหญ่ 4',type:'เต้นท์ใหญ่'},
+  {name:'เต้นท์เล็ก 1',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 2',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 3',type:'เต้นท์เล็ก'},
+  {name:'เต้นท์เล็ก 4',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 5',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 6',type:'เต้นท์เล็ก'},
+  {name:'เต้นท์เล็ก 7',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 8',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 9',type:'เต้นท์เล็ก'},{name:'เต้นท์เล็ก 10',type:'เต้นท์เล็ก'}
+];
+const ICONS = {'ห้องใหญ่':'🏠','ห้องกลาง':'🛏','ห้องเล็ก':'🛖','เต้นท์ใหญ่':'⛺','เต้นท์เล็ก':'🏕'};
+
+let bookings = [];
+let currentTab = 'grid';
+
+document.getElementById('view-date').value = TODAY;
+
+// Realtime listener
+onValue(bookingsRef, function(snap){
+  bookings = [];
+  const data = snap.val();
+  if(data){
+    Object.entries(data).forEach(([key,val])=>{
+      bookings.push({...val, key});
+    });
+  }
+  bookings.sort((a,b)=>a.checkin>b.checkin?1:-1);
+
+  // Update sync status
+  document.getElementById('sync-dot').className = 'sync-dot';
+  document.getElementById('sync-txt').textContent = 'อัปเดตล่าสุด ' + new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'});
+
+  // Update total count
+  document.getElementById('sum-all').textContent = bookings.length;
+
+  renderGrid();
+  if(currentTab === 'list') renderList();
+}, function(err){
+  document.getElementById('sync-dot').style.background = '#f87171';
+  document.getElementById('sync-txt').textContent = 'เชื่อมต่อไม่ได้';
+});
+
+function isBooked(roomName, date){
+  return bookings.find(b=>b.room===roomName&&b.checkin<=date&&b.checkout>date);
+}
+
+function renderGrid(){
+  const date = document.getElementById('view-date').value || TODAY;
+  const c = document.getElementById('grid-container');
+  const cats = ['ห้องใหญ่','ห้องกลาง','ห้องเล็ก','เต้นท์ใหญ่','เต้นท์เล็ก'];
+  let booked = 0, html = '';
+  cats.forEach(cat=>{
+    const rooms = ROOMS.filter(r=>r.type===cat);
+    html += `<div class="cat-label">${ICONS[cat]} ${cat}</div><div class="room-grid">`;
+    rooms.forEach(r=>{
+      const b = isBooked(r.name, date);
+      if(b) booked++;
+      html += `<div class="room-card ${b?'booked':'available'}">
+        <div class="room-name">${r.name}</div>
+        <span class="room-status ${b?'booked':'available'}">${b?'จองแล้ว':'ว่าง'}</span>
+        ${b?`<div class="room-guest">👤 ${b.name}</div><div class="room-dates">📅 ${b.checkin} → ${b.checkout}</div>`:''}
+      </div>`;
+    });
+    html += '</div>';
+  });
+  c.innerHTML = html;
+  document.getElementById('sum-booked').textContent = booked;
+  document.getElementById('sum-free').textContent = ROOMS.length - booked;
+}
+
+function renderList(){
+  const q = (document.getElementById('search-q').value||'').toLowerCase();
+  const c = document.getElementById('list-container');
+  let list = bookings.filter(b=>!q||b.name?.toLowerCase().includes(q)||b.phone?.includes(q)||b.room?.toLowerCase().includes(q));
+  if(!list.length){
+    c.innerHTML='<div class="empty-state">📭 ไม่มีข้อมูลการจอง</div>';
+    return;
+  }
+  c.innerHTML = list.map(b=>`
+    <div class="booking-item">
+      <div class="bi-name">👤 ${b.name}</div>
+      <div class="bi-info">📞 ${b.phone}</div>
+      <div class="bi-info">📅 ${b.checkin} → ${b.checkout}</div>
+      ${b.note?`<div class="bi-info">📝 ${b.note}</div>`:''}
+      <div style="margin-top:6px"><span class="bi-room-badge">${b.room}</span></div>
+    </div>`).join('');
+}
+
+window.switchTab = function(tab){
+  currentTab = tab;
+  document.getElementById('view-grid').style.display = tab==='grid'?'block':'none';
+  document.getElementById('view-list').style.display = tab==='list'?'block':'none';
+  document.getElementById('tab-grid').className = 'tab-btn'+(tab==='grid'?' active':'');
+  document.getElementById('tab-list').className = 'tab-btn'+(tab==='list'?' active':'');
+  if(tab==='list') renderList();
+  if(tab==='grid') renderGrid();
+};
+</script>
+</body>
+</html>
