@@ -31,6 +31,16 @@ input::placeholder{color:var(--text3)}
 .btn-danger{color:var(--red);border-color:rgba(248,113,113,.3)}
 .btn-share{background:var(--green-bg);color:var(--green);border-color:rgba(74,222,128,.3)}
 .btn-qr{background:var(--accent-bg);color:var(--accent);border-color:rgba(201,169,110,.3)}
+.room-select-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:8px}
+.room-cb-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:8px;user-select:none}
+.room-cb-card:active{transform:scale(.97)}
+.room-cb-card.selected{border-color:var(--accent);background:var(--accent-bg)}
+.room-cb-card.unavailable{opacity:0.35;cursor:not-allowed}
+.room-cb-card input[type=checkbox]{accent-color:var(--accent);width:16px;height:16px;flex-shrink:0;cursor:pointer}
+.room-cb-name{font-size:13px;font-weight:500}
+.selected-rooms-preview{font-size:12px;color:var(--accent);margin-bottom:10px;min-height:16px}
+.room-cat-label{font-size:11px;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.room-cat-label::after{content:'';flex:1;height:1px;background:var(--border)}
 .btn-full{width:100%}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn-sm{padding:7px 13px;font-size:13px}
@@ -147,19 +157,16 @@ input::placeholder{color:var(--text3)}
     <div class="section-title">➕ เพิ่มการจอง</div>
     <div class="form-row"><label>ชื่อผู้จอง *</label><input type="text" id="b-name" placeholder="ชื่อ-นามสกุล" autocomplete="off"></div>
     <div class="form-row"><label>เบอร์โทรศัพท์ *</label><input type="tel" id="b-phone" placeholder="0812345678" inputmode="tel"></div>
-    <div class="form-row"><label>ห้อง / เต้นท์ *</label>
-      <select id="b-room">
-        <option value="">-- เลือกห้องหรือเต้นท์ --</option>
-        <optgroup label="🏠 ห้องใหญ่"><option>ห้องใหญ่ 1</option><option>ห้องใหญ่ 2</option><option>ห้องใหญ่ 3</option></optgroup>
-        <optgroup label="🛏 ห้องกลาง"><option>ห้องกลาง 1</option><option>ห้องกลาง 2</option><option>ห้องกลาง 3</option><option>ห้องกลาง 4</option><option>ห้องกลาง 5</option><option>ห้องกลาง 6</option></optgroup>
-        <optgroup label="🛖 ห้องเล็ก"><option>ห้องเล็ก 1</option><option>ห้องเล็ก 2</option><option>ห้องเล็ก 3</option><option>ห้องเล็ก 4</option><option>ห้องเล็ก 5</option><option>ห้องเล็ก 6</option></optgroup>
-        <optgroup label="⛺ เต้นท์ใหญ่"><option>เต้นท์ใหญ่ 1</option><option>เต้นท์ใหญ่ 2</option><option>เต้นท์ใหญ่ 3</option><option>เต้นท์ใหญ่ 4</option></optgroup>
-        <optgroup label="🏕 เต้นท์เล็ก"><option>เต้นท์เล็ก 1</option><option>เต้นท์เล็ก 2</option><option>เต้นท์เล็ก 3</option><option>เต้นท์เล็ก 4</option><option>เต้นท์เล็ก 5</option><option>เต้นท์เล็ก 6</option><option>เต้นท์เล็ก 7</option><option>เต้นท์เล็ก 8</option><option>เต้นท์เล็ก 9</option><option>เต้นท์เล็ก 10</option></optgroup>
-      </select>
+    <div class="form-row">
+      <label>ห้อง / เต้นท์ * <span style="font-weight:400;text-transform:none;letter-spacing:0">(เลือกได้หลายห้อง)</span></label>
+      <div id="room-selector-container">
+        <!-- rendered by renderRoomSelector() -->
+      </div>
+      <div class="selected-rooms-preview" id="selected-rooms-preview">ยังไม่ได้เลือกห้อง</div>
     </div>
     <div class="form-grid">
-      <div><label>วันเช็คอิน *</label><input type="date" id="b-checkin"></div>
-      <div><label>วันเช็คเอาท์ *</label><input type="date" id="b-checkout"></div>
+      <div><label>วันเช็คอิน *</label><input type="date" id="b-checkin" onchange="renderRoomSelector()"></div>
+      <div><label>วันเช็คเอาท์ *</label><input type="date" id="b-checkout" onchange="renderRoomSelector()"></div>
     </div>
     <div class="form-row"><label>หมายเหตุ</label><input type="text" id="b-note" placeholder="เช่น ต้องการที่จอดรถ" autocomplete="off"></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -266,6 +273,7 @@ function startApp(){
   document.getElementById('b-checkin').value=TODAY;
   var d=new Date();d.setDate(d.getDate()+1);
   document.getElementById('b-checkout').value=d.toISOString().split('T')[0];
+  renderRoomSelector();
   loadBookings();
 }
 function doLogout(){
@@ -388,24 +396,61 @@ function confirmDelete(fk){
 }
 
 // ── ADD BOOKING ──
+function getSelectedRooms(){
+  var checked=document.querySelectorAll('.room-cb[data-room]:checked');
+  return Array.from(checked).map(function(c){return c.dataset.room;});
+}
+function renderRoomSelector(){
+  var checkin=document.getElementById('b-checkin').value;
+  var checkout=document.getElementById('b-checkout').value;
+  var cats=['ห้องใหญ่','ห้องกลาง','ห้องเล็ก','เต้นท์ใหญ่','เต้นท์เล็ก'];
+  var icons={'ห้องใหญ่':'🏠','ห้องกลาง':'🛏','ห้องเล็ก':'🛖','เต้นท์ใหญ่':'⛺','เต้นท์เล็ก':'🏕'};
+  var html='';
+  cats.forEach(function(cat){
+    var rooms=ROOMS.filter(function(r){return r.type===cat;});
+    html+='<div class="room-cat-label">'+icons[cat]+' '+cat+'</div><div class="room-select-grid">';
+    rooms.forEach(function(r){
+      var unavail=checkin&&checkout?bookings.some(function(b){return b.room===r.name&&b.checkin<checkout&&b.checkout>checkin;}):false;
+      html+='<label class="room-cb-card'+(unavail?' unavailable':'')+'">'
+        +'<input type="checkbox" class="room-cb" data-room="'+r.name+'" '+(unavail?'disabled':'')+' onchange="updatePreview()">'
+        +'<span class="room-cb-name">'+r.name+(unavail?' 🔴':'')+'</span>'
+        +'</label>';
+    });
+    html+='</div>';
+  });
+  var c=document.getElementById('room-selector-container');
+  if(c)c.innerHTML=html;
+  updatePreview();
+}
+function updatePreview(){
+  var sel=getSelectedRooms();
+  var el=document.getElementById('selected-rooms-preview');
+  if(!el)return;
+  if(sel.length===0){el.textContent='ยังไม่ได้เลือกห้อง';el.style.color='var(--text3)';}
+  else{el.textContent='✓ เลือกแล้ว '+sel.length+' ห้อง: '+sel.join(', ');el.style.color='var(--accent)';}
+}
 function addBooking(){
   var name=document.getElementById('b-name').value.trim();
   var phone=document.getElementById('b-phone').value.trim();
-  var room=document.getElementById('b-room').value;
+  var rooms=getSelectedRooms();
   var checkin=document.getElementById('b-checkin').value;
   var checkout=document.getElementById('b-checkout').value;
   var note=document.getElementById('b-note').value.trim();
   var msg=document.getElementById('booking-msg');
   msg.className='msg-text';msg.textContent='';
-  if(!name||!phone||!room||!checkin||!checkout){msg.className='msg-text err';msg.textContent='⚠ กรุณากรอกข้อมูลให้ครบถ้วน';return;}
+  if(!name||!phone||rooms.length===0||!checkin||!checkout){msg.className='msg-text err';msg.textContent='⚠ กรุณากรอกข้อมูลและเลือกห้องให้ครบถ้วน';return;}
   if(checkin>=checkout){msg.className='msg-text err';msg.textContent='⚠ วันเช็คเอาท์ต้องหลังวันเช็คอิน';return;}
-  var conflict=bookings.find(function(b){return b.room===room&&b.checkin<checkout&&b.checkout>checkin;});
-  if(conflict){msg.className='msg-text err';msg.textContent='⚠ ห้องนี้มีการจองซ้อนกัน ('+conflict.name+')';return;}
+  var conflicts=rooms.filter(function(room){return bookings.some(function(b){return b.room===room&&b.checkin<checkout&&b.checkout>checkin;});});
+  if(conflicts.length>0){msg.className='msg-text err';msg.textContent='⚠ ห้องมีการจองซ้อนกัน: '+conflicts.join(', ');return;}
   var btn=document.getElementById('save-btn');
   btn.disabled=true;btn.textContent='⏳ กำลังบันทึก...';
-  push(bookingsRef, {name:name,phone:phone,room:room,checkin:checkin,checkout:checkout,note:note,created:new Date().toISOString()})
+  var promises=rooms.map(function(room){
+    return push(bookingsRef,{name:name,phone:phone,room:room,checkin:checkin,checkout:checkout,note:note,created:new Date().toISOString()});
+  });
+  Promise.all(promises)
     .then(function(){
-      msg.className='msg-text ok';msg.textContent='✅ บันทึกสำเร็จ — '+name+' | '+room;
+      msg.className='msg-text ok';
+      msg.textContent='✅ บันทึกสำเร็จ — '+name+' | '+rooms.length+' ห้อง: '+rooms.join(', ');
       clearForm();
     })
     .catch(function(e){msg.className='msg-text err';msg.textContent='⚠ บันทึกไม่สำเร็จ: '+e.message;})
@@ -413,10 +458,10 @@ function addBooking(){
 }
 function clearForm(){
   ['b-name','b-phone','b-note'].forEach(function(id){document.getElementById(id).value='';});
-  document.getElementById('b-room').value='';
   document.getElementById('b-checkin').value=TODAY;
   var d=new Date();d.setDate(d.getDate()+1);
   document.getElementById('b-checkout').value=d.toISOString().split('T')[0];
+  renderRoomSelector();
 }
 
 // ── LIST ──
@@ -623,6 +668,11 @@ window.changePass = changePass;
 window.showQRModal = showQRModal;
 window.renderQR = renderQR;
 window.dlQR = dlQR;
+window.renderRoomSelector = renderRoomSelector;
+window.updatePreview = updatePreview;
+window.getSelectedRooms = getSelectedRooms;
+window.renderRoomSelector = renderRoomSelector;
+window.updatePreview = updatePreview;
 window.loadBookings = loadBookings;
 </script>
 </body>
