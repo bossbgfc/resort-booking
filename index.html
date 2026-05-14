@@ -312,8 +312,16 @@ function showTab(t,navId){
 }
 
 // ── ROOMS ──
+function getRooms(b){
+  // support both old (b.room string) and new (b.rooms array) format
+  if(b.rooms&&Array.isArray(b.rooms))return b.rooms;
+  if(b.room)return [b.room];
+  return [];
+}
 function isBooked(roomName,date){
-  return bookings.find(function(b){return b.room===roomName&&b.checkin<=date&&b.checkout>date;});
+  return bookings.find(function(b){
+    return getRooms(b).indexOf(roomName)!==-1&&b.checkin<=date&&b.checkout>date;
+  });
 }
 function renderRooms(){
   var date=document.getElementById('view-date')&&document.getElementById('view-date').value||TODAY;
@@ -410,7 +418,7 @@ function renderRoomSelector(){
     var rooms=ROOMS.filter(function(r){return r.type===cat;});
     html+='<div class="room-cat-label">'+icons[cat]+' '+cat+'</div><div class="room-select-grid">';
     rooms.forEach(function(r){
-      var unavail=checkin&&checkout?bookings.some(function(b){return b.room===r.name&&b.checkin<checkout&&b.checkout>checkin;}):false;
+      var unavail=checkin&&checkout?bookings.some(function(b){return getRooms(b).indexOf(r.name)!==-1&&b.checkin<checkout&&b.checkout>checkin;}):false;
       html+='<label class="room-cb-card'+(unavail?' unavailable':'')+'">'
         +'<input type="checkbox" class="room-cb" data-room="'+r.name+'" '+(unavail?'disabled':'')+' onchange="updatePreview()">'
         +'<span class="room-cb-name">'+r.name+(unavail?' 🔴':'')+'</span>'
@@ -440,14 +448,11 @@ function addBooking(){
   msg.className='msg-text';msg.textContent='';
   if(!name||!phone||rooms.length===0||!checkin||!checkout){msg.className='msg-text err';msg.textContent='⚠ กรุณากรอกข้อมูลและเลือกห้องให้ครบถ้วน';return;}
   if(checkin>=checkout){msg.className='msg-text err';msg.textContent='⚠ วันเช็คเอาท์ต้องหลังวันเช็คอิน';return;}
-  var conflicts=rooms.filter(function(room){return bookings.some(function(b){return b.room===room&&b.checkin<checkout&&b.checkout>checkin;});});
+  var conflicts=rooms.filter(function(room){return bookings.some(function(b){return getRooms(b).indexOf(room)!==-1&&b.checkin<checkout&&b.checkout>checkin;});});
   if(conflicts.length>0){msg.className='msg-text err';msg.textContent='⚠ ห้องมีการจองซ้อนกัน: '+conflicts.join(', ');return;}
   var btn=document.getElementById('save-btn');
   btn.disabled=true;btn.textContent='⏳ กำลังบันทึก...';
-  var promises=rooms.map(function(room){
-    return push(bookingsRef,{name:name,phone:phone,room:room,checkin:checkin,checkout:checkout,note:note,created:new Date().toISOString()});
-  });
-  Promise.all(promises)
+  push(bookingsRef,{name:name,phone:phone,rooms:rooms,checkin:checkin,checkout:checkout,note:note,created:new Date().toISOString()})
     .then(function(){
       msg.className='msg-text ok';
       msg.textContent='✅ บันทึกสำเร็จ — '+name+' | '+rooms.length+' ห้อง: '+rooms.join(', ');
@@ -469,14 +474,14 @@ function renderList(){
   var q=(document.getElementById('search-q')&&document.getElementById('search-q').value||'').toLowerCase();
   var c=document.getElementById('booking-list-container');
   if(!c)return;
-  var list=bookings.filter(function(b){return!q||b.name&&b.name.toLowerCase().includes(q)||b.phone&&b.phone.includes(q)||b.room&&b.room.toLowerCase().includes(q);});
+  var list=bookings.filter(function(b){var roomStr=getRooms(b).join(' ');return!q||b.name&&b.name.toLowerCase().includes(q)||b.phone&&b.phone.includes(q)||roomStr.toLowerCase().includes(q);});
   if(!list.length){c.innerHTML='<div class="empty-state"><span class="empty-icon">📭</span>ไม่มีข้อมูลการจอง</div>';return;}
   c.innerHTML=list.map(function(b){
     return '<div class="bk-item">'+
       '<div style="min-width:0">'+
         '<div class="bi-name">'+b.name+'</div>'+
         '<div class="bi-info">📞 '+b.phone+'</div>'+
-        '<div class="bi-info">🚪 '+b.room+'</div>'+
+        '<div class="bi-info">🚪 '+getRooms(b).join(', ')+'</div>'+
         '<div class="bi-info">📅 '+b.checkin+' → '+b.checkout+'</div>'+
         (b.note?'<div class="bi-info">📝 '+b.note+'</div>':'')+
       '</div>'+
@@ -499,12 +504,12 @@ function showShareAll(){
   if(!bookings.length){alert('ยังไม่มีข้อมูลการจอง');return;}
   var text='🏕 รีสอร์ท — สรุปการจองทั้งหมด ('+bookings.length+' รายการ)\n'+'━'.repeat(24)+'\n';
   bookings.forEach(function(b,i){
-    text+=(i+1)+'. '+b.name+' | '+b.room+'\n   📞 '+b.phone+' | 📅 '+b.checkin+' → '+b.checkout+(b.note?'\n   📝 '+b.note:'')+'\n\n';
+    text+=(i+1)+'. '+b.name+' | '+getRooms(b).join(', ')+'\n   📞 '+b.phone+' | 📅 '+b.checkin+' → '+b.checkout+(b.note?'\n   📝 '+b.note:'')+'\n\n';
   });
   showShareModal(text,'📤 ส่งสรุปการจองทั้งหมด');
 }
 function buildShareText(b){
-  return '🏕 รีสอร์ท — ยืนยันการจอง\n'+'━'.repeat(20)+'\n👤 ชื่อ: '+b.name+'\n📞 เบอร์: '+b.phone+'\n🚪 ห้อง: '+b.room+'\n📅 เช็คอิน: '+b.checkin+'\n📅 เช็คเอาท์: '+b.checkout+(b.note?'\n📝 หมายเหตุ: '+b.note:'')+'\n'+'━'.repeat(20)+'\nขอบคุณที่ใช้บริการครับ/ค่ะ';
+  return '🏕 รีสอร์ท — ยืนยันการจอง\n'+'━'.repeat(20)+'\n👤 ชื่อ: '+b.name+'\n📞 เบอร์: '+b.phone+'\n🚪 ห้อง: '+getRooms(b).join(', ')+'\n📅 เช็คอิน: '+b.checkin+'\n📅 เช็คเอาท์: '+b.checkout+(b.note?'\n📝 หมายเหตุ: '+b.note:'')+'\n'+'━'.repeat(20)+'\nขอบคุณที่ใช้บริการครับ/ค่ะ';
 }
 function showShareModal(text,title){
   var modal=document.getElementById('modal-content');
